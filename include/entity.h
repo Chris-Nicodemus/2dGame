@@ -3,6 +3,7 @@
 
 #include "gfc_types.h"
 #include "gf2d_sprite.h"
+#include "gfc_shape.h"
 
 
 typedef struct Entity_S
@@ -10,11 +11,15 @@ typedef struct Entity_S
     Uint8  _inuse;
     Sprite *sprite;
     float frame; //sprite frame to render but needs to be cast as a Uint32
+    Vector2D flip;   //tells renderer to flip image if necessary
     Vector2D position;    
+    Vector2D scale;
     void (*think) (struct Entity_S *self);
     void (*update) (struct Entity_S *self);
     void (*free) (struct Entity_S *self);
     void *data;
+
+    Rect bounds;
 }Entity;
 
 /**

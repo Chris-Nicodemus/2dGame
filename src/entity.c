@@ -21,6 +21,8 @@ void entity_system_close()
     free(entity_manager.entity_list);
 
     memset(&entity_manager,0,sizeof(EntityManager));
+
+    slog("Entity System Close");
 }
 
 
@@ -166,9 +168,10 @@ void entity_draw(Entity *self)
     if(!self)
     return;
 
+    
     if(self->sprite)
     {
-        gf2d_sprite_render(self->sprite,self->position,NULL,NULL,NULL,NULL,NULL,NULL,(Uint32)self->frame);
+        gf2d_sprite_render(self->sprite,self->position,&self->scale,NULL,NULL,&self->flip,NULL,NULL,(Uint32)self->frame);
     }
 }
 

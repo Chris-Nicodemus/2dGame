@@ -40,13 +40,14 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     /*main game loop*/
 
-    Entity *player = player_new();
+    Entity *player = player_new(vector2d(360,320));
     while(!done)
     {
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
+        //slog("X:%i, Y:%i",mx,my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
         
@@ -61,7 +62,7 @@ int main(int argc, char * argv[])
 
             //entities middle
             entity_system_draw();
-
+            
             
             //UI elements last
             gf2d_sprite_draw(

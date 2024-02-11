@@ -8,6 +8,6 @@
  * @brief spawn a player
  * @return pointer to player, or NULL on error
 */
-Entity *player_new();
+Entity *player_new(Vector2D pos);
 
 #endif
