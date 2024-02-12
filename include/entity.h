@@ -14,12 +14,14 @@ typedef struct Entity_S
     Vector2D flip;   //tells renderer to flip image if necessary
     Vector2D position;    
     Vector2D scale;
+
     void (*think) (struct Entity_S *self);
     void (*update) (struct Entity_S *self);
     void (*free) (struct Entity_S *self);
     void *data;
 
-    Rect bounds;
+    Rect bounds; //size of sprite
+    Bool mouse; //true if mouse is held over bounds
 }Entity;
 
 /**

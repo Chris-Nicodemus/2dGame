@@ -30,18 +30,18 @@ Entity *player_new(Vector2D pos)
 
 void player_think(Entity *self)
 {
-    int mx,my;
-
     if(!self)
     return;
 
-    SDL_GetMouseState(&mx,&my);
-    if(gfc_point_in_rect(vector2d(mx,my),self->bounds))
+    if(self->mouse)
     {
-        slog("being moused over");
+        self->scale = vector2d(2,2);
     }
-    else
-    slog("no mouse");
+    else if(vector2d_compare(self->scale,vector2d(2,2)))
+    {
+        self->scale = vector2d(1,1);
+    }
+
     
 }
 

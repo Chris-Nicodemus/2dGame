@@ -115,10 +115,18 @@ void entity_free(Entity *self)
 
 void entity_think(Entity *self)
 {
+    int mx,my;
+
     if(!self)
     return;
     //any stuff that all entities should do goes here
-
+    self->mouse = false;
+    SDL_GetMouseState(&mx,&my);
+    if(gfc_point_in_rect(vector2d(mx,my),self->bounds))
+    {
+        self->mouse = true;
+    }
+    
     if(self->think)
     self->think(self);
 }
