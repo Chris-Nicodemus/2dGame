@@ -11,7 +11,7 @@ typedef struct
 
 
 static EntityManager entity_manager = {0}; /**<initialize a global entity manager>*/
-
+extern Bool leftClicked;
 
 void entity_system_close()
 {
@@ -116,17 +116,24 @@ void entity_free(Entity *self)
 void entity_think(Entity *self)
 {
     int mx,my;
+    Uint32 mButton;
 
     if(!self)
     return;
     //any stuff that all entities should do goes here
     self->mouse = false;
-    SDL_GetMouseState(&mx,&my);
+    mButton = SDL_GetMouseState(&mx,&my);
     if(gfc_point_in_rect(vector2d(mx,my),self->bounds))
     {
         self->mouse = true;
     }
     
+    if(self->mouse && mButton == SDL_BUTTON_LEFT && !leftClicked)
+    {
+        if(self->leftClick)
+        self->leftClick(self);
+    }
+
     if(self->think)
     self->think(self);
 }

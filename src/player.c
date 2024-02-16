@@ -1,9 +1,12 @@
 #include "simple_logger.h"
+#include "gfc_input.h"
 #include "player.h"
 
 void player_think(Entity *self);
 void player_update(Entity *self);
 void player_free(Entity *self);
+void player_leftClick(Entity *self);
+void player_rightClick(Entity *self);
 
 Entity *player_new(Vector2D pos)
 {
@@ -25,6 +28,8 @@ Entity *player_new(Vector2D pos)
     ent->think = player_think;
     ent->update = player_update;
     ent->free = player_free;
+    ent->leftClick = player_leftClick;
+    ent->rightClick = player_rightClick;
     return ent;
 }
 
@@ -33,16 +38,16 @@ void player_think(Entity *self)
     if(!self)
     return;
 
+
     if(self->mouse)
     {
-        self->scale = vector2d(2,2);
-    }
-    else if(vector2d_compare(self->scale,vector2d(2,2)))
-    {
-        self->scale = vector2d(1,1);
+        //things to do when being moused on
     }
 
-    
+    if(gfc_input_command_pressed("file"))
+    {
+        slog("input works");
+    }
 }
 
 void player_update(Entity *self)
@@ -67,5 +72,16 @@ void player_free(Entity *self)
     return;
 }
 
+void player_leftClick(Entity *self)
+{
+    if(!self) return;
+
+    slog("player was left clicked");
+}
+
+void player_rightClick(Entity *self)
+{
+    if(!self) return;
+}
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop

@@ -18,6 +18,8 @@ typedef struct Entity_S
     void (*think) (struct Entity_S *self);
     void (*update) (struct Entity_S *self);
     void (*free) (struct Entity_S *self);
+    void (*leftClick) (struct Entity_S *self);
+    void (*rightClick) (struct Entity_S *self);
     void *data;
 
     Rect bounds; //size of sprite
