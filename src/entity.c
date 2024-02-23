@@ -1,5 +1,6 @@
 #include "simple_logger.h"
 
+#include "gf2d_draw.h"
 #include "entity.h"
 
 
@@ -12,6 +13,7 @@ typedef struct
 
 static EntityManager entity_manager = {0}; /**<initialize a global entity manager>*/
 extern Bool leftClicked;
+extern Bool rightClicked;
 
 void entity_system_close()
 {
@@ -123,15 +125,25 @@ void entity_think(Entity *self)
     //any stuff that all entities should do goes here
     self->mouse = false;
     mButton = SDL_GetMouseState(&mx,&my);
+    
+    
     if(gfc_point_in_rect(vector2d(mx,my),self->bounds))
     {
         self->mouse = true;
+        //gf2d_draw_rect(self->bounds,gfc_color(1,0,0,1));
     }
     
     if(self->mouse && mButton == SDL_BUTTON_LEFT && !leftClicked)
     {
         if(self->leftClick)
         self->leftClick(self);
+    }
+
+    if(self->mouse && mButton == 4 && !rightClicked)
+    {
+        //slog("happening");
+        if(self->rightClick)
+        self->rightClick(self);
     }
 
     if(self->think)
@@ -183,10 +195,16 @@ void entity_draw(Entity *self)
     if(!self)
     return;
 
+    Vector2D pos = self->position;
+    if(self->drawOffset)
+    {
+        pos.x = pos.x + self->drawOffset;
+        pos.y = pos.y + self->drawOffset;
+    }
     
     if(self->sprite)
     {
-        gf2d_sprite_render(self->sprite,self->position,&self->scale,NULL,NULL,&self->flip,NULL,NULL,(Uint32)self->frame);
+        gf2d_sprite_render(self->sprite,pos,&self->scale,NULL,NULL,&self->flip,NULL,NULL,(Uint32)self->frame);
     }
 }
 
@@ -202,4 +220,23 @@ void entity_system_draw()
 
         entity_draw(&entity_manager.entity_list[i]);
     }
+}
+
+void entity_highlight(Entity *self)
+{
+    gf2d_draw_rect(self->bounds,gfc_color(1,1,1,1));
+}
+
+void entity_highlight_all()
+{
+    int i;
+    for(i = 0; i < entity_manager.entity_max; i++)
+    {
+        if(!entity_manager.entity_list[i]._inuse)
+        continue;
+
+        if(entity_manager.entity_list[i].mouse)
+        entity_highlight(&entity_manager.entity_list[i]);
+    }
+
 }

@@ -3,11 +3,13 @@
 
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
+#include "gf2d_draw.h"
 #include "gfc_input.h"
 #include "entity.h"
 #include "player.h"
 
 Bool leftClicked;
+Bool rightClicked;
 
 int main(int argc, char * argv[])
 {
@@ -63,6 +65,7 @@ int main(int argc, char * argv[])
         entity_system_think();
         entity_system_update();
             
+        
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
@@ -71,6 +74,11 @@ int main(int argc, char * argv[])
 
             //entities middle
             entity_system_draw();
+
+            entity_highlight_all();
+
+            //gf2d_draw_rect_filled(gfc_rect(player->position.x,player->position.y,5,5),gfc_color(1,0,0,1));
+
             
             if(mButton == SDL_BUTTON_LEFT && !leftClicked)
             {
@@ -82,6 +90,16 @@ int main(int argc, char * argv[])
                 leftClicked = false;
             }
             
+            //slog("mbutton: %i", mButton);
+            if(mButton == 4 && !rightClicked)
+            {
+                rightClicked = true;
+                //slog("game happening");
+            }
+            else if(rightClicked && mButton != 4)
+            {
+                rightClicked = false;
+            }
             //UI elements last
             gf2d_sprite_draw(
                 mouse,
@@ -93,6 +111,7 @@ int main(int argc, char * argv[])
                 &mouseColor,
                 (int)mf);
 
+            
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
         

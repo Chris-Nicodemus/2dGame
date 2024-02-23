@@ -14,6 +14,7 @@ typedef struct Entity_S
     Vector2D flip;   //tells renderer to flip image if necessary
     Vector2D position;    
     Vector2D scale;
+    float drawOffset; //how much to offset draw and bounds. Make negative to move up/left
 
     void (*think) (struct Entity_S *self);
     void (*update) (struct Entity_S *self);
@@ -61,7 +62,12 @@ void entity_system_think();
 void entity_system_update();
 
 /**
- * @brief draw all activ entities
+ * @brief draw all active entities
 */
 void entity_system_draw();
+
+/**
+ * highlight all moused entities
+*/
+void entity_highlight_all();
 #endif

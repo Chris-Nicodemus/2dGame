@@ -7,6 +7,7 @@ void player_update(Entity *self);
 void player_free(Entity *self);
 void player_leftClick(Entity *self);
 void player_rightClick(Entity *self);
+void new_deck(Entity *self);
 
 Entity *player_new(Vector2D pos)
 {
@@ -22,7 +23,8 @@ Entity *player_new(Vector2D pos)
     
     ent->position = pos;
     ent->scale = vector2d(1,1);
-    ent->bounds = gfc_rect(ent->position.x,ent->position.y,ent->scale.x * 128,ent->scale.y * 128);
+    ent->drawOffset = -64;
+    ent->bounds = gfc_rect(ent->position.x + ent->drawOffset,ent->position.y + ent->drawOffset,ent->scale.x * 128,ent->scale.y * 128);
     ent->frame = 96;
     ent->flip = vector2d(1,0);
     ent->think = player_think;
@@ -30,6 +32,13 @@ Entity *player_new(Vector2D pos)
     ent->free = player_free;
     ent->leftClick = player_leftClick;
     ent->rightClick = player_rightClick;
+
+    ent->data = gfc_list_new();
+    
+    new_deck(ent);
+
+    //copies decklist into current deck
+    gfc_list_append(ent->data,gfc_list_copy(gfc_list_get_nth(ent->data,0)));
     return ent;
 }
 
@@ -62,7 +71,7 @@ void player_update(Entity *self)
         self->frame = 96;
     }
     
-    self->bounds = gfc_rect(self->position.x,self->position.y,self->scale.x * 128,self->scale.y * 128);
+    self->bounds = gfc_rect(self->position.x + self->drawOffset,self->position.y + self->drawOffset,self->scale.x * 128,self->scale.y * 128);
     //slog("frame: %i",(int)self->frame);
 }
 
@@ -70,6 +79,8 @@ void player_free(Entity *self)
 {
     if(!self)
     return;
+
+    self->data = NULL;
 }
 
 void player_leftClick(Entity *self)
@@ -77,11 +88,44 @@ void player_leftClick(Entity *self)
     if(!self) return;
 
     slog("player was left clicked");
+
+    int i;
+
+    for(i = 0; i < 6; i++)
+    {
+        slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,0),i));
+    }
 }
 
 void player_rightClick(Entity *self)
 {
     if(!self) return;
+
+    slog("player was right clicked");
+
+    int i;
+
+    for(i = 0; i < 6; i++)
+    {
+        slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,1),i));
+    }
+}
+
+void new_deck(Entity *self)
+{
+    int i = 0;
+
+    if(!self) return;
+
+    List *deck = gfc_list_new();
+
+    for(i = 0; i < 5; i++)
+    {
+        gfc_list_append(deck,"strike");
+        gfc_list_append(deck,"defend");
+    }
+
+    gfc_list_append(self->data, deck);
 }
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop
