@@ -7,6 +7,7 @@
 #include "gfc_input.h"
 #include "entity.h"
 #include "player.h"
+#include "card.h"
 
 Bool leftClicked;
 Bool rightClicked;
@@ -32,10 +33,10 @@ int main(int argc, char * argv[])
     slog("---==== BEGIN ====---");
     gf2d_graphics_initialize(
         "gf2d",
-        1200,
-        720,
-        1200,
-        720,
+        2400,
+        1440,
+        2400,
+        1440,
         vector4d(0,0,0,255),
         0);
     gf2d_graphics_set_frame_delay(24);
@@ -50,6 +51,7 @@ int main(int argc, char * argv[])
     /*main game loop*/
 
     Entity *player = player_new(vector2d(360,320));
+    Entity *card = card_new("strike");
     while(!done)
     {
         gfc_input_update();
@@ -121,6 +123,7 @@ int main(int argc, char * argv[])
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     entity_free(player);
+    entity_free(card);
     slog("---==== END ====---");
     return 0;
 }

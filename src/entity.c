@@ -80,7 +80,7 @@ Entity *entity_new()
 {
     int i;
 
-    slog("new ent called");
+    //slog("new ent called");
 
     for(i = 0; i < entity_manager.entity_max; i++)
     {
@@ -91,7 +91,7 @@ Entity *entity_new()
         entity_manager.entity_list[i]._inuse = 1;
         //do all stuff that all entities want here
 
-        slog("entity made");
+        //slog("entity made");
         //return the reference to entity
         return &entity_manager.entity_list[i];
     }
@@ -219,6 +219,7 @@ void entity_system_draw()
         continue;
 
         entity_draw(&entity_manager.entity_list[i]);
+        //slog("%i",i);
     }
 }
 

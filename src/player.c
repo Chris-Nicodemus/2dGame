@@ -52,11 +52,6 @@ void player_think(Entity *self)
     {
         //things to do when being moused on
     }
-
-    if(gfc_input_command_pressed("file"))
-    {
-        slog("input works");
-    }
 }
 
 void player_update(Entity *self)
