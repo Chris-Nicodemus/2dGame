@@ -111,7 +111,7 @@ void entity_free(Entity *self)
     gf2d_sprite_free(self->sprite);
     //anything else allocated for the entity would get cleaned up here
     if(self->free)
-    self->free(self->data);
+    self->free(self);
 }
 
 

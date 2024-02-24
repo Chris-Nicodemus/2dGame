@@ -88,6 +88,12 @@ void player_free(Entity *self)
     if(!self)
     return;
 
+    while(gfc_list_get_count(self->data) > 0)
+    {
+        gfc_list_delete_last(self->data);
+    }
+
+    gfc_list_delete(self->data);
     self->data = NULL;
 }
 
@@ -202,6 +208,7 @@ void player_draw(Entity *self, Uint8 num)
         gfc_list_delete_nth(currentDeck,0); //removes card from top of deck
 
         num--;
+        cards++;
     }
 }
 //spritesheet goes from 0 to 147
