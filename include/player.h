@@ -15,13 +15,13 @@ Entity *player_new(Vector2D pos);
  * @brief shuffles the player's deck
  * @param self player in question
 */
-//void player_shuffle(Entity *self);
+void player_shuffle(Entity *self);
 
 /*player custom data notes
 data is turned into a list
 0 - deck            sacred decklist of the player during a run
 1 - currentDeck     list of cards in-combat decklist for the player
-2 - hand            list of cards in player's current hand
-3 - discard         list of cards used by the player
+2 - discard         list of cards used by the player
+3 - hand            list of cards in player's current hand
 */
 #endif

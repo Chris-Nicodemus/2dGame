@@ -9,6 +9,7 @@ void player_leftClick(Entity *self);
 void player_rightClick(Entity *self);
 void new_deck(Entity *self);
 
+
 Entity *player_new(Vector2D pos)
 {
     Entity *ent = entity_new();
@@ -39,6 +40,15 @@ Entity *player_new(Vector2D pos)
 
     //copies decklist into current deck
     gfc_list_append(ent->data,gfc_list_copy(gfc_list_get_nth(ent->data,0)));
+
+    //discard pile
+    gfc_list_append(ent->data,gfc_list_new());
+    gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
+
+    player_shuffle(ent);
+
+    gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
+    //gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
     return ent;
 }
 
@@ -86,10 +96,10 @@ void player_leftClick(Entity *self)
 
     int i;
 
-    for(i = 0; i < 6; i++)
+    /*for(i = 0; i < gfc_list_get_count(gfc_list_get_nth(self->data,0)); i++)
     {
         slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,0),i));
-    }
+    }*/
 }
 
 void player_rightClick(Entity *self)
@@ -100,10 +110,12 @@ void player_rightClick(Entity *self)
 
     int i;
 
-    for(i = 0; i < 6; i++)
+    /*for(i = 0; i < gfc_list_get_count(gfc_list_get_nth(self->data,1)); i++)
     {
         slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,1),i));
-    }
+    }*/
+
+    //slog("discard %s",gfc_list_get_nth(gfc_list_get_nth(self->data,2),0));
 }
 
 void new_deck(Entity *self)
@@ -121,6 +133,37 @@ void new_deck(Entity *self)
     }
 
     gfc_list_append(self->data, deck);
+}
+
+void player_shuffle(Entity *self)
+{
+    if(!self) return;
+
+    List *currentDeck = gfc_list_get_nth(self->data,1);
+    List *discard = gfc_list_get_nth(self->data,2);
+    int count;
+    int i,r;
+
+    //if there is a discard pile
+    if(gfc_list_get_count(discard) > 0)
+    {
+        gfc_list_concat(currentDeck,discard);
+
+        //empty discard
+        while(gfc_list_get_count(discard) > 0)
+        {
+            gfc_list_delete_last(discard);
+        }
+        //gfc_list_insert(self->data,gfc_list_new(),2);
+    }
+
+    count = gfc_list_get_count(currentDeck);
+
+    for(i = 0; i < count; i++)
+    {
+        r = (count - 1) * gfc_random();
+        gfc_list_swap_indices(currentDeck,i,r);
+    }
 }
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop

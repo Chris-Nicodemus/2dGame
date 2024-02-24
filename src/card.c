@@ -39,7 +39,7 @@ Entity *card_new(char *name)
 void find_sprite(Entity *self)
 {
     if(!self) return;
-    slog("%s",self->data);
+    //slog("%s",self->data);
     if(strcmp(self->data,"strike") == 0)
     {
         //slog("getting to strike");
@@ -48,11 +48,6 @@ void find_sprite(Entity *self)
     else if(strcmp(self->data,"defend") == 0)
     {
         self->sprite = gf2d_sprite_load_image("images/cards/defend.png");
-    }
-
-    if(self->sprite)
-    {
-        slog("sprite is not null");
     }
 }
 
