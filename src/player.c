@@ -1,6 +1,7 @@
 #include "simple_logger.h"
 #include "gfc_input.h"
 #include "player.h"
+#include "card.h"
 
 void player_think(Entity *self);
 void player_update(Entity *self);
@@ -48,7 +49,7 @@ Entity *player_new(Vector2D pos)
     //hand
     gfc_list_append(ent->data,gfc_list_new());
     player_shuffle(ent);
-    player_draw(ent,5);
+    player_draw(ent,10);
 
     //gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
     //gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
@@ -192,7 +193,7 @@ void player_draw(Entity *self, Uint8 num)
     List *hand = gfc_list_get_nth(self->data,3);
     List *currentDeck = gfc_list_get_nth(self->data,1);
     int cards = gfc_list_get_count(hand);
-    
+    Entity *card;    
     char *name;
 
     while((cards + 1  <= 10) && num > 0)
@@ -204,11 +205,32 @@ void player_draw(Entity *self, Uint8 num)
         }    
 
         name = gfc_list_get_nth(currentDeck,0); //gets top card of deck
-        gfc_list_append(hand,name); //add card to hand
+        card = card_new(name);
+        gfc_list_append(hand,card); //add card to hand
         gfc_list_delete_nth(currentDeck,0); //removes card from top of deck
 
         num--;
         cards++;
+    }
+
+    player_arrange_hand(self);
+}
+
+void player_arrange_hand(Entity *self)
+{
+    if(!self) return;
+    
+    int i;
+    List *hand = gfc_list_get_nth(self->data,3);
+
+    Entity *card = gfc_list_get_nth(hand,0);
+    card->position = vector2d(71, 1154);
+
+    for(i = 0; i < gfc_list_get_count(hand); i++)
+    {
+        card = gfc_list_get_nth(hand,i);
+
+        card->position = vector2d(240 * i + 20, 1154);
     }
 }
 //spritesheet goes from 0 to 147

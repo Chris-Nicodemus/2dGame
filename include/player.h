@@ -23,6 +23,12 @@ void player_shuffle(Entity *self);
  * @param num number of cards to draw
 */
 void player_draw(Entity *self, Uint8 num);
+
+/**
+ * @brief arranges cards on the screen
+ * @param self player in question
+*/
+void player_arrange_hand(Entity *self);
 /*player custom data notes
 data is turned into a list
 0 - deck            sacred decklist of the player during a run

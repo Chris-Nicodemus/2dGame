@@ -51,7 +51,7 @@ int main(int argc, char * argv[])
     /*main game loop*/
 
     Entity *player = player_new(vector2d(360,320));
-    Entity *card = card_new("strike");
+    //Entity *card = card_new("strike");
     while(!done)
     {
         gfc_input_update();

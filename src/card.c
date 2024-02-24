@@ -67,6 +67,8 @@ void card_update(Entity *self)
 {
     if(!self)
     return;
+
+    self->bounds = gfc_rect(self->position.x + self->drawOffset,self->position.y + self->drawOffset,self->scale.x * 1050,self->scale.y * 1365);
 }
 
 void card_free(Entity *self)
@@ -90,3 +92,8 @@ void card_rightClick(Entity *self)
 
     slog("card was right clicked");
 }
+
+//51 pixel space between
+//1154 pixels down
+//189 width
+//245.7 height
