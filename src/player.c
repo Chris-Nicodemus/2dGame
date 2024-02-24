@@ -43,11 +43,14 @@ Entity *player_new(Vector2D pos)
 
     //discard pile
     gfc_list_append(ent->data,gfc_list_new());
-    gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
+    //gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
 
+    //hand
+    gfc_list_append(ent->data,gfc_list_new());
     player_shuffle(ent);
+    player_draw(ent,5);
 
-    gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
+    //gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
     //gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
     return ent;
 }
@@ -96,9 +99,16 @@ void player_leftClick(Entity *self)
 
     int i;
 
-    /*for(i = 0; i < gfc_list_get_count(gfc_list_get_nth(self->data,0)); i++)
+    /*slog("hand");
+    for(i = 0; i < gfc_list_get_count(gfc_list_get_nth(self->data,3)); i++)
     {
-        slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,0),i));
+        slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,3),i));
+    }
+
+    slog("deck");
+    for(i = 0; i < gfc_list_get_count(gfc_list_get_nth(self->data,1)); i++)
+    {
+        slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,1),i));
     }*/
 }
 
@@ -163,6 +173,35 @@ void player_shuffle(Entity *self)
     {
         r = (count - 1) * gfc_random();
         gfc_list_swap_indices(currentDeck,i,r);
+    }
+}
+
+void player_draw(Entity *self, Uint8 num)
+{
+    if(!self) return;
+
+    //always draw at least one card
+    if(!num) num = 1;
+
+    List *hand = gfc_list_get_nth(self->data,3);
+    List *currentDeck = gfc_list_get_nth(self->data,1);
+    int cards = gfc_list_get_count(hand);
+    
+    char *name;
+
+    while((cards + 1  <= 10) && num > 0)
+    {
+        //shuffle discard pile into deck if deck empty
+        if(gfc_list_get_count(currentDeck) == 0)
+        {
+            player_shuffle(self);
+        }    
+
+        name = gfc_list_get_nth(currentDeck,0); //gets top card of deck
+        gfc_list_append(hand,name); //add card to hand
+        gfc_list_delete_nth(currentDeck,0); //removes card from top of deck
+
+        num--;
     }
 }
 //spritesheet goes from 0 to 147

@@ -17,6 +17,12 @@ Entity *player_new(Vector2D pos);
 */
 void player_shuffle(Entity *self);
 
+/**
+ * @brief draws certain number of cards from deck. stops drawing if too many cards in hand. if there are no more cards in currentDeck, reshuffles.
+ * @param self player in question
+ * @param num number of cards to draw
+*/
+void player_draw(Entity *self, Uint8 num);
 /*player custom data notes
 data is turned into a list
 0 - deck            sacred decklist of the player during a run
