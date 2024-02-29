@@ -196,11 +196,8 @@ void entity_draw(Entity *self)
     return;
 
     Vector2D pos = self->position;
-    if(self->drawOffset)
-    {
-        pos.x = pos.x + self->drawOffset;
-        pos.y = pos.y + self->drawOffset;
-    }
+    pos.x = pos.x + self->drawOffsetX;
+    pos.y = pos.y + self->drawOffsetY;
     
     if(self->sprite)
     {
@@ -236,7 +233,7 @@ void entity_highlight_all()
         if(!entity_manager.entity_list[i]._inuse)
         continue;
 
-        if(entity_manager.entity_list[i].mouse)
+        if(entity_manager.entity_list[i].mouse && !entity_manager.entity_list[i].noHighlight)
         entity_highlight(&entity_manager.entity_list[i]);
     }
 

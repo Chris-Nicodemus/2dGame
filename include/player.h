@@ -8,6 +8,7 @@
  * @brief spawn a player
  * @return pointer to player, or NULL on error
  * @param  pos position that the player will spawn
+ * @param load true if the player should load their deck from config
 */
 Entity *player_new(Vector2D pos);
 
@@ -29,6 +30,24 @@ void player_draw(Entity *self, Uint8 num);
  * @param self player in question
 */
 void player_arrange_hand(Entity *self);
+
+/**
+ * @brief make a new deck for player
+ * @param self player in question
+*/
+void player_new_deck(Entity *self);
+
+/**
+ * @brief save the player's deck to a json file
+ * @param self the player in question
+*/
+void player_save_deck(Entity *self);
+
+/**
+ * @brief load the player's deck from config
+ * @param self the player in question
+*/
+void player_load_deck(Entity *self);
 /*player custom data notes
 data is turned into a list
 0 - deck            sacred decklist of the player during a run

@@ -1,10 +1,11 @@
 #include <SDL.h>
 #include "simple_logger.h"
-
+#include "simple_json.h"
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
 #include "gf2d_draw.h"
 #include "gfc_input.h"
+#include "world.h"
 #include "entity.h"
 #include "player.h"
 #include "card.h"
@@ -17,7 +18,8 @@ int main(int argc, char * argv[])
     /*variable declarations*/
     int done = 0;
     const Uint8 * keys;
-    Sprite *sprite;
+    //Sprite *sprite;
+    World *world;
     
     int mx,my;
     Uint32 mButton;
@@ -26,6 +28,12 @@ int main(int argc, char * argv[])
     Sprite *mouse;
     Color mouseColor = gfc_color8(255,100,255,200);
     
+    float healthRatio;
+    Rect damage,health;
+    Color red = gfc_color8(100,0,0,255);
+    Color green = gfc_color8(50,208,0,255);
+    float barX,barY;
+    float barLength, barWidth = 32;
     /*program initializtion*/
     init_logger("gf2d.log",0);
     gfc_input_init("gfc/sample_config/input.cfg");
@@ -46,11 +54,16 @@ int main(int argc, char * argv[])
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
-    sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
+    //sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
+    world = world_new();
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     /*main game loop*/
 
-    Entity *player = player_new(vector2d(360,320));
+    Entity *player = player_new(vector2d(690,740));
+    player_load_deck(player);
+    player_shuffle(player);
+    player_draw(player,10);
+    barLength = 128 * player->scale.x;
     //Entity *card = card_new("strike");
     while(!done)
     {
@@ -71,20 +84,31 @@ int main(int argc, char * argv[])
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
-            gf2d_sprite_draw_image(sprite,vector2d(0,0));
-            
+            //gf2d_sprite_draw_image(sprite,vector2d(0,0));
+            world_draw(world);
 
             //entities middle
             entity_system_draw();
 
+            healthRatio = (float)player->health / (float)player->healthMax;
+            
+            barX = player->position.x - (64 * player->scale.x);
+            barY = player->position.y + (64 * player->scale.y);
+
+            damage = gfc_rect(barX,barY, barLength,barWidth);
+            health = gfc_rect(barX,barY,barLength * healthRatio, barWidth);
+            
+            gf2d_draw_rect_filled(damage,red);
+            gf2d_draw_rect_filled(health,green);
+
             entity_highlight_all();
 
             //gf2d_draw_rect_filled(gfc_rect(player->position.x,player->position.y,5,5),gfc_color(1,0,0,1));
-
             
+
             if(mButton == SDL_BUTTON_LEFT && !leftClicked)
             {
-                //slog("mousey");
+                slog("x: %i, y: %i",mx,my);
                 leftClicked = true;
             }
             else if(leftClicked && mButton != SDL_BUTTON_LEFT)
@@ -118,7 +142,11 @@ int main(int argc, char * argv[])
         
         
 
-        if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
+        if (keys[SDL_SCANCODE_ESCAPE])
+        {
+            player_save_deck(player);
+            done = 1; // exit condition
+        }
         if (keys[SDL_SCANCODE_Q])done = 1; //secondary exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }

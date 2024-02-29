@@ -1,4 +1,8 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "simple_logger.h"
+#include "simple_json.h"
 #include "gfc_input.h"
 #include "player.h"
 #include "card.h"
@@ -8,7 +12,7 @@ void player_update(Entity *self);
 void player_free(Entity *self);
 void player_leftClick(Entity *self);
 void player_rightClick(Entity *self);
-void new_deck(Entity *self);
+void player_new_deck(Entity *self);
 
 
 Entity *player_new(Vector2D pos)
@@ -24,9 +28,10 @@ Entity *player_new(Vector2D pos)
     ent->sprite = gf2d_sprite_load_all("images/ed210.png",128,128,16,0);
     
     ent->position = pos;
-    ent->scale = vector2d(1,1);
-    ent->drawOffset = -64;
-    ent->bounds = gfc_rect(ent->position.x + ent->drawOffset,ent->position.y + ent->drawOffset,ent->scale.x * 128,ent->scale.y * 128);
+    ent->scale = vector2d(2.5,2.5);
+    ent->drawOffsetX = -128 * ent->scale.y * 0.5;
+    ent->drawOffsetY = -128 * ent->scale.y * 0.5;
+    ent->bounds = gfc_rect(ent->position.x + ent->drawOffsetX,ent->position.y + ent->drawOffsetY,ent->scale.x * 128,ent->scale.y * 128);
     ent->frame = 96;
     ent->flip = vector2d(1,0);
     ent->think = player_think;
@@ -34,25 +39,35 @@ Entity *player_new(Vector2D pos)
     ent->free = player_free;
     ent->leftClick = player_leftClick;
     ent->rightClick = player_rightClick;
+    ent->healthMax = 89;
+    ent->health = ent->healthMax; 
 
     ent->data = gfc_list_new();
     
-    new_deck(ent);
-
-    //copies decklist into current deck
-    gfc_list_append(ent->data,gfc_list_copy(gfc_list_get_nth(ent->data,0)));
-
+    //deck
+    gfc_list_append(ent->data,gfc_list_new());
+    //currentdeck
+    gfc_list_append(ent->data,gfc_list_new());
     //discard pile
     gfc_list_append(ent->data,gfc_list_new());
+    //hand
+    gfc_list_append(ent->data,gfc_list_new());
+
+    //player_new_deck(ent);
+    
+
+    //copies decklist into current deck
+    //gfc_list_append(ent->data,gfc_list_copy(gfc_list_get_nth(ent->data,0)));
+
+    //discard pile
+    //gfc_list_append(ent->data,gfc_list_new());
     //gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
 
     //hand
-    gfc_list_append(ent->data,gfc_list_new());
-    player_shuffle(ent);
-    player_draw(ent,10);
+    //gfc_list_append(ent->data,gfc_list_new());
+    //player_shuffle(ent);
+    //player_draw(ent,10);
 
-    //gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
-    //gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
     return ent;
 }
 
@@ -79,8 +94,10 @@ void player_update(Entity *self)
     {
         self->frame = 96;
     }
-    
-    self->bounds = gfc_rect(self->position.x + self->drawOffset,self->position.y + self->drawOffset,self->scale.x * 128,self->scale.y * 128);
+    //slog("frame: %f", self->frame);
+    self->drawOffsetX = -128 * self->scale.y * 0.5;
+    self->drawOffsetY = -128 * self->scale.y * 0.5;
+    self->bounds = gfc_rect(self->position.x + self->drawOffsetX,self->position.y + self->drawOffsetY,self->scale.x * 128,self->scale.y * 128);
     //slog("frame: %i",(int)self->frame);
 }
 
@@ -104,9 +121,9 @@ void player_leftClick(Entity *self)
 
     slog("player was left clicked");
 
-    int i;
+    /*int i;
 
-    /*slog("hand");
+    slog("hand");
     for(i = 0; i < gfc_list_get_count(gfc_list_get_nth(self->data,3)); i++)
     {
         slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,3),i));
@@ -125,9 +142,9 @@ void player_rightClick(Entity *self)
 
     slog("player was right clicked");
 
-    int i;
+    /*int i;
 
-    /*for(i = 0; i < gfc_list_get_count(gfc_list_get_nth(self->data,1)); i++)
+    for(i = 0; i < gfc_list_get_count(gfc_list_get_nth(self->data,1)); i++)
     {
         slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,1),i));
     }*/
@@ -135,13 +152,13 @@ void player_rightClick(Entity *self)
     //slog("discard %s",gfc_list_get_nth(gfc_list_get_nth(self->data,2),0));
 }
 
-void new_deck(Entity *self)
+void player_new_deck(Entity *self)
 {
-    int i = 0;
+    int i;
 
     if(!self) return;
 
-    List *deck = gfc_list_new();
+    List *deck = gfc_list_get_nth(self->data,0);
 
     for(i = 0; i < 5; i++)
     {
@@ -149,7 +166,7 @@ void new_deck(Entity *self)
         gfc_list_append(deck,"defend");
     }
 
-    gfc_list_append(self->data, deck);
+    gfc_list_concat(gfc_list_get_nth(self->data,1),deck);
 }
 
 void player_shuffle(Entity *self)
@@ -203,9 +220,10 @@ void player_draw(Entity *self, Uint8 num)
         {
             player_shuffle(self);
         }    
-
+        //slog("getting here");
         name = gfc_list_get_nth(currentDeck,0); //gets top card of deck
-        card = card_new(name);
+        slog("%s",name);
+        card = card_new(name, self);
         gfc_list_append(hand,card); //add card to hand
         gfc_list_delete_nth(currentDeck,0); //removes card from top of deck
 
@@ -232,6 +250,65 @@ void player_arrange_hand(Entity *self)
 
         card->position = vector2d(240 * i + 20, 1154);
     }
+}
+
+void player_save_deck(Entity *self)
+{
+    if(!self) return;
+
+    List *d = gfc_list_get_nth(self->data,0);
+    char *entry = gfc_list_get_nth(d,0);
+    FILE *deck;
+    int i;
+    int count = gfc_list_get_count(d);
+
+    deck = fopen("config/deck.json","w");
+
+    fprintf(deck,"{\n\t\"deck\":\n\t[\n\t\t\"%s\"",entry);
+
+    for(i = 1; i < count; i++)
+    {
+        entry = gfc_list_get_nth(d,i);
+        fprintf(deck,",\n\t\t\"%s\"",entry);
+    }
+    
+    fprintf(deck,"\n\t]\n}");
+
+    fclose(deck);
+}
+
+void player_load_deck(Entity *self)
+{
+    SJson *json,*dson;
+    List *deck = gfc_list_get_nth(self->data,0);
+    List *currentDeck = gfc_list_get_nth(self->data,1);
+    int i;
+    char *name;
+    if(!self)
+    return;
+
+    json = sj_load("config/deck.json");
+    if(!json)
+    {
+        slog("failed to laod json");
+        return;
+    }
+
+    dson = sj_object_get_value(json,"deck");
+    if(!dson)
+    {
+        slog("failed to get deck");
+        return;
+    }
+
+    for(i = 0; i < sj_array_get_count(dson);i++)
+    {
+        //slog("%s",sj_get_string_value(sj_array_get_nth(dson,i)));
+        
+        name = sj_get_string_value(sj_array_get_nth(dson,i));
+        gfc_list_append(deck,name);
+    }
+    gfc_list_concat(currentDeck,deck);
 }
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop

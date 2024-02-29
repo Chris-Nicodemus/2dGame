@@ -10,7 +10,7 @@ void card_rightClick(Entity *self);
 
 void find_sprite(Entity *self);
 
-Entity *card_new(char *name)
+Entity *card_new(char *name, Entity *player)
 {
     Entity *ent = entity_new();
 
@@ -23,10 +23,10 @@ Entity *card_new(char *name)
     ent->data = name;
     find_sprite(ent);
     
+    ent->owner = player;
     ent->position = vector2d(0,0);
     ent->scale = vector2d(.18,.18);
-    //ent->drawOffset = 0;
-    ent->bounds = gfc_rect(ent->position.x + ent->drawOffset,ent->position.y + ent->drawOffset,ent->scale.x * 1050,ent->scale.y * 1365);
+    ent->bounds = gfc_rect(ent->position.x + ent->drawOffsetX,ent->position.y + ent->drawOffsetY,ent->scale.x * 1050,ent->scale.y * 1365);
     ent->think = card_think;
     ent->update = card_update;
     ent->free = card_free;
@@ -68,7 +68,7 @@ void card_update(Entity *self)
     if(!self)
     return;
 
-    self->bounds = gfc_rect(self->position.x + self->drawOffset,self->position.y + self->drawOffset,self->scale.x * 1050,self->scale.y * 1365);
+    self->bounds = gfc_rect(self->position.x + self->drawOffsetX,self->position.y + self->drawOffsetY,self->scale.x * 1050,self->scale.y * 1365);
 }
 
 void card_free(Entity *self)
