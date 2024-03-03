@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include <SDL.h>
 #include "simple_logger.h"
 #include "simple_json.h"
@@ -5,6 +8,7 @@
 #include "gf2d_sprite.h"
 #include "gf2d_draw.h"
 #include "gfc_input.h"
+#include "font.h"
 #include "world.h"
 #include "entity.h"
 #include "player.h"
@@ -34,6 +38,8 @@ int main(int argc, char * argv[])
     Color green = gfc_color8(50,208,0,255);
     float barX,barY;
     float barLength, barWidth = 32;
+
+    
     /*program initializtion*/
     init_logger("gf2d.log",0);
     gfc_input_init("gfc/sample_config/input.cfg");
@@ -48,9 +54,10 @@ int main(int argc, char * argv[])
         vector4d(0,0,0,255),
         0);
     gf2d_graphics_set_frame_delay(24);
+    font_init();
     gf2d_sprite_init(1024);
     entity_system_init(1024);
-
+    
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
@@ -60,11 +67,23 @@ int main(int argc, char * argv[])
     /*main game loop*/
 
     Entity *player = player_new(vector2d(690,740));
-    player_load_deck(player);
+    FILE *deck = fopen("config/deck.json","r");
+    if(get_file_Size(deck) == 0)
+    {
+        player_new_deck(player);
+        slog("deck empty making new deck");
+    }
+    else
+    {
+        player_load_deck(player);
+        slog("loading deck");
+    }
+    fclose(deck);
+
     player_shuffle(player);
     player_draw(player,10);
     barLength = 128 * player->scale.x;
-    //Entity *card = card_new("strike");
+
     while(!done)
     {
         gfc_input_update();
@@ -137,7 +156,8 @@ int main(int argc, char * argv[])
                 &mouseColor,
                 (int)mf);
 
-            
+            font_draw_text("Testing!",FS_Medium,GFC_COLOR_LIGHTBLUE,vector2d(20,30),vector2d(3,3));
+
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
         
@@ -147,7 +167,12 @@ int main(int argc, char * argv[])
             player_save_deck(player);
             done = 1; // exit condition
         }
-        if (keys[SDL_SCANCODE_Q])done = 1; //secondary exit condition
+        if (keys[SDL_SCANCODE_Q])
+        {
+            FILE *deck = fopen("config/deck.json","w");
+            fclose(deck);
+            done = 1; //secondary exit condition
+        } 
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     entity_clear_all(NULL);

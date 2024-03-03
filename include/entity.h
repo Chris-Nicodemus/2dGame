@@ -18,11 +18,13 @@ typedef struct Entity_S
     float drawOffsetY; //how much to offset draw and bounds. Make negative to move up
     struct Entity_S *owner; //for cards to have a reference to their owner and enemies to have a reference to the player
     Bool noHighlight;   //true if you do not want entity to get highlighted on mouse
+    
 
     int health;
     int healthMax;
     int block;
-
+    int energy;
+    int energyMax;
     
     void (*think) (struct Entity_S *self);
     void (*update) (struct Entity_S *self);

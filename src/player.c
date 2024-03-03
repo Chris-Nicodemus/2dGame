@@ -41,6 +41,8 @@ Entity *player_new(Vector2D pos)
     ent->rightClick = player_rightClick;
     ent->healthMax = 89;
     ent->health = ent->healthMax; 
+    ent->energyMax = 3;
+    ent->energy = ent->energyMax;
 
     ent->data = gfc_list_new();
     
@@ -222,7 +224,7 @@ void player_draw(Entity *self, Uint8 num)
         }    
         //slog("getting here");
         name = gfc_list_get_nth(currentDeck,0); //gets top card of deck
-        slog("%s",name);
+        //slog("%s",name);
         card = card_new(name, self);
         gfc_list_append(hand,card); //add card to hand
         gfc_list_delete_nth(currentDeck,0); //removes card from top of deck
@@ -290,7 +292,7 @@ void player_load_deck(Entity *self)
     json = sj_load("config/deck.json");
     if(!json)
     {
-        slog("failed to laod json");
+        slog("failed to l0ad json");
         return;
     }
 
