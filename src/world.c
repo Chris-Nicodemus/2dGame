@@ -16,8 +16,8 @@ World *world_new()
     world->icons = gfc_list_new();
     world->bgs = gfc_list_new();
 
-    world->background = gf2d_sprite_load_image("images/backgrounds/7.png");
-    world->name = "images/backgrounds/7.png";
+    world->background = gf2d_sprite_load_image("images/backgrounds/cityDay.png");
+    world->name = "images/backgrounds/cityDay.png";
     world->scale = vector2d(1.04166667,1.111111111);
 
     return world;

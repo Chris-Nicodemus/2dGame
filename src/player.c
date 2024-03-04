@@ -107,9 +107,13 @@ void player_free(Entity *self)
 {
     if(!self)
     return;
+    int i;
+
 
     while(gfc_list_get_count(self->data) > 0)
     {
+        i = gfc_list_get_count(self->data) - 1;
+        gfc_list_delete(gfc_list_get_nth(self->data,i));
         gfc_list_delete_last(self->data);
     }
 
