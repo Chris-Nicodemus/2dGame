@@ -32,6 +32,7 @@ Entity *card_new(char *name, Entity *player)
     ent->free = card_free;
     ent->leftClick = card_leftClick;
     ent->rightClick = card_rightClick;
+    ent->type = Card;
 
     return ent;
 }

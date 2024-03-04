@@ -6,6 +6,22 @@
 #include "gfc_shape.h"
 
 
+typedef enum
+{
+    Combat,
+    Event,
+    Choice,
+    Map
+} State;
+
+typedef enum
+{
+    Player,
+    Icon,
+    Card,
+    Enemy
+} EntType;
+
 typedef struct Entity_S
 {
     Uint8  _inuse;
@@ -18,6 +34,7 @@ typedef struct Entity_S
     float drawOffsetY; //how much to offset draw and bounds. Make negative to move up
     struct Entity_S *owner; //for cards to have a reference to their owner and enemies to have a reference to the player
     Bool noHighlight;   //true if you do not want entity to get highlighted on mouse
+    EntType type;       //type of entity
     
 
     int health;

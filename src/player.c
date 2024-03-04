@@ -43,6 +43,7 @@ Entity *player_new(Vector2D pos)
     ent->health = ent->healthMax; 
     ent->energyMax = 3;
     ent->energy = ent->energyMax;
+    ent->type = Player;
 
     ent->data = gfc_list_new();
     

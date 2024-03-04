@@ -14,6 +14,7 @@ typedef struct
 static EntityManager entity_manager = {0}; /**<initialize a global entity manager>*/
 extern Bool leftClicked;
 extern Bool rightClicked;
+extern State state;
 
 void entity_system_close()
 {
@@ -189,7 +190,38 @@ int i;
     }
 }
 
+Bool entity_active(Entity *self)
+{
+    EntType type;
 
+    if(!self) return false;
+
+    type = self->type;
+    switch(state)
+    {
+        case Combat:
+            if(type == Player || type == Enemy || type == Card)
+                return true;
+            else
+                return false;
+        case Event:
+            if(type == Player || type == Card)
+                return true;
+            else
+                return false;
+        case Choice:
+            if(type == Icon)
+                return true;
+            else
+                return false;
+        case Map:
+            if(type == Icon)
+                return true;
+            else
+                return false;
+    }
+    return false;
+}
 void entity_draw(Entity *self)
 {
     if(!self)
@@ -215,15 +247,19 @@ void entity_system_draw()
         if(!entity_manager.entity_list[i]._inuse)
         continue;
 
+        if(!entity_active(&entity_manager.entity_list[i])) continue;
+
         entity_draw(&entity_manager.entity_list[i]);
         //slog("%i",i);
     }
 }
 
+
 void entity_highlight(Entity *self)
 {
     gf2d_draw_rect(self->bounds,gfc_color(1,1,1,1));
 }
+
 
 void entity_highlight_all()
 {
