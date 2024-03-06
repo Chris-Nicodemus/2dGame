@@ -10,7 +10,8 @@ typedef struct
     Vector2D scale;
     char    *name;
     List    *bgs;
-    List    *icons;
+    List    *icons;     //List of sprites for icon ents
+    List    *iconEnts;  //List of entities that will have icons
 } World;
 
 

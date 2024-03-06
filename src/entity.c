@@ -115,6 +115,38 @@ void entity_free(Entity *self)
     self->free(self);
 }
 
+Bool entity_active(Entity *self)
+{
+    EntType type;
+
+    if(!self) return false;
+
+    type = self->type;
+    switch(state)
+    {
+        case Combat:
+            if(type == Player || type == Enemy || type == Card)
+                return true;
+            else
+                return false;
+        case Event:
+            if(type == Player || type == Card)
+                return true;
+            else
+                return false;
+        case Choice:
+            if(type == Icon)
+                return true;
+            else
+                return false;
+        case Map:
+            if(type == Icon)
+                return true;
+            else
+                return false;
+    }
+    return false;
+}
 
 void entity_think(Entity *self)
 {
@@ -123,15 +155,20 @@ void entity_think(Entity *self)
 
     if(!self)
     return;
+
     //any stuff that all entities should do goes here
-    self->mouse = false;
-    mButton = SDL_GetMouseState(&mx,&my);
     
+    self->mouse = false;
+
+    if(!entity_active(self))
+    return;
+
+    
+    mButton = SDL_GetMouseState(&mx,&my);
     
     if(gfc_point_in_rect(vector2d(mx,my),self->bounds))
     {
         self->mouse = true;
-        //gf2d_draw_rect(self->bounds,gfc_color(1,0,0,1));
     }
     
     if(self->mouse && mButton == SDL_BUTTON_LEFT && !leftClicked)
@@ -190,38 +227,6 @@ int i;
     }
 }
 
-Bool entity_active(Entity *self)
-{
-    EntType type;
-
-    if(!self) return false;
-
-    type = self->type;
-    switch(state)
-    {
-        case Combat:
-            if(type == Player || type == Enemy || type == Card)
-                return true;
-            else
-                return false;
-        case Event:
-            if(type == Player || type == Card)
-                return true;
-            else
-                return false;
-        case Choice:
-            if(type == Icon)
-                return true;
-            else
-                return false;
-        case Map:
-            if(type == Icon)
-                return true;
-            else
-                return false;
-    }
-    return false;
-}
 void entity_draw(Entity *self)
 {
     if(!self)
@@ -234,6 +239,11 @@ void entity_draw(Entity *self)
     if(self->sprite)
     {
         gf2d_sprite_render(self->sprite,pos,&self->scale,NULL,NULL,&self->flip,NULL,NULL,(Uint32)self->frame);
+    }
+
+    if(self->draw)
+    {
+        self->draw(self);
     }
 }
 
@@ -269,6 +279,8 @@ void entity_highlight_all()
         if(!entity_manager.entity_list[i]._inuse)
         continue;
 
+        if(!entity_active(&entity_manager.entity_list[i])) continue;
+        
         if(entity_manager.entity_list[i].mouse && !entity_manager.entity_list[i].noHighlight)
         entity_highlight(&entity_manager.entity_list[i]);
     }

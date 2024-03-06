@@ -13,6 +13,7 @@ void player_free(Entity *self);
 void player_leftClick(Entity *self);
 void player_rightClick(Entity *self);
 void player_new_deck(Entity *self);
+void player_ui(Entity *self);
 
 
 Entity *player_new(Vector2D pos)
@@ -29,9 +30,10 @@ Entity *player_new(Vector2D pos)
     
     ent->position = pos;
     ent->scale = vector2d(2.5,2.5);
-    ent->drawOffsetX = -128 * ent->scale.y * 0.5;
-    ent->drawOffsetY = -128 * ent->scale.y * 0.5;
-    ent->bounds = gfc_rect(ent->position.x + ent->drawOffsetX,ent->position.y + ent->drawOffsetY,ent->scale.x * 128,ent->scale.y * 128);
+    ent->pixel = vector2d(128,128);
+    ent->drawOffsetX = -ent->pixel.x * ent->scale.x * 0.5;
+    ent->drawOffsetY = -ent->pixel.y * ent->scale.y * 0.5;
+    ent->bounds = gfc_rect(ent->position.x + ent->drawOffsetX,ent->position.y + ent->drawOffsetY,ent->scale.x * ent->pixel.x,ent->scale.y * ent->pixel.y);
     ent->frame = 96;
     ent->flip = vector2d(1,0);
     ent->think = player_think;
@@ -39,6 +41,7 @@ Entity *player_new(Vector2D pos)
     ent->free = player_free;
     ent->leftClick = player_leftClick;
     ent->rightClick = player_rightClick;
+    ent->draw = player_ui;
     ent->healthMax = 89;
     ent->health = ent->healthMax; 
     ent->energyMax = 3;
@@ -98,9 +101,9 @@ void player_update(Entity *self)
         self->frame = 96;
     }
     //slog("frame: %f", self->frame);
-    self->drawOffsetX = -128 * self->scale.y * 0.5;
-    self->drawOffsetY = -128 * self->scale.y * 0.5;
-    self->bounds = gfc_rect(self->position.x + self->drawOffsetX,self->position.y + self->drawOffsetY,self->scale.x * 128,self->scale.y * 128);
+    self->drawOffsetX = -self->pixel.x * self->scale.y * 0.5;
+    self->drawOffsetY = -self->pixel.y * self->scale.y * 0.5;
+    self->bounds = gfc_rect(self->position.x + self->drawOffsetX,self->position.y + self->drawOffsetY,self->scale.x * self->pixel.x,self->scale.y * self->pixel.y);
     //slog("frame: %i",(int)self->frame);
 }
 
@@ -316,6 +319,30 @@ void player_load_deck(Entity *self)
         gfc_list_append(deck,name);
     }
     gfc_list_concat(currentDeck,deck);
+}
+
+void player_ui(Entity *self)
+{
+    float healthRatio;
+    Rect damage,health;
+    Color red = gfc_color8(100,0,0,255);
+    Color green = gfc_color8(50,208,0,255);
+    float barX,barY;
+    float barLength, barWidth = 32;
+    
+    if(!self) return;
+
+    barLength = 128 * self->scale.x;
+    healthRatio = (float)self->health / (float)self->healthMax;
+            
+            barX = self->position.x - (64 * self->scale.x);
+            barY = self->position.y + (64 * self->scale.y);
+
+            damage = gfc_rect(barX,barY, barLength,barWidth);
+            health = gfc_rect(barX,barY,barLength * healthRatio, barWidth);
+            
+            gf2d_draw_rect_filled(damage,red);
+            gf2d_draw_rect_filled(health,green);
 }
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop

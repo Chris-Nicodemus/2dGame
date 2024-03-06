@@ -30,6 +30,7 @@ typedef struct Entity_S
     Vector2D flip;   //tells renderer to flip image if necessary
     Vector2D position;    
     Vector2D scale;
+    Vector2D pixel;     //size of image in terms of pixels
     float drawOffsetX; //how much to offset draw and bounds. Make negative to move left
     float drawOffsetY; //how much to offset draw and bounds. Make negative to move up
     struct Entity_S *owner; //for cards to have a reference to their owner and enemies to have a reference to the player
@@ -48,6 +49,7 @@ typedef struct Entity_S
     void (*free) (struct Entity_S *self);
     void (*leftClick) (struct Entity_S *self);
     void (*rightClick) (struct Entity_S *self);
+    void (*draw) (struct Entity_S *self);   //additional stuff to draw other than the sprite itself (like health bars for example)
     void *data;
 
     Rect bounds; //size of sprite

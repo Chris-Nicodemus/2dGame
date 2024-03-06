@@ -26,7 +26,8 @@ Entity *card_new(char *name, Entity *player)
     ent->owner = player;
     ent->position = vector2d(0,0);
     ent->scale = vector2d(.18,.18);
-    ent->bounds = gfc_rect(ent->position.x + ent->drawOffsetX,ent->position.y + ent->drawOffsetY,ent->scale.x * 1050,ent->scale.y * 1365);
+    ent->pixel = vector2d(1050,1365);
+    ent->bounds = gfc_rect(ent->position.x + ent->drawOffsetX,ent->position.y + ent->drawOffsetY,ent->scale.x * ent->pixel.x,ent->scale.y * ent->pixel.y);
     ent->think = card_think;
     ent->update = card_update;
     ent->free = card_free;
@@ -69,7 +70,7 @@ void card_update(Entity *self)
     if(!self)
     return;
 
-    self->bounds = gfc_rect(self->position.x + self->drawOffsetX,self->position.y + self->drawOffsetY,self->scale.x * 1050,self->scale.y * 1365);
+    self->bounds = gfc_rect(self->position.x + self->drawOffsetX,self->position.y + self->drawOffsetY,self->scale.x * self->pixel.x,self->scale.y * self->pixel.y);
 }
 
 void card_free(Entity *self)

@@ -8,7 +8,6 @@
  * @brief spawn a player
  * @return pointer to player, or NULL on error
  * @param  pos position that the player will spawn
- * @param load true if the player should load their deck from config
 */
 Entity *player_new(Vector2D pos);
 

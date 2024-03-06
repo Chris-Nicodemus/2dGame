@@ -13,10 +13,11 @@
 #include "entity.h"
 #include "player.h"
 #include "card.h"
+#include "icon.h"
 
 Bool leftClicked;
 Bool rightClicked;
-State state = Combat;
+State state = Choice;
 
 int main(int argc, char * argv[])
 {
@@ -33,12 +34,7 @@ int main(int argc, char * argv[])
     Sprite *mouse;
     Color mouseColor = gfc_color8(255,100,255,200);
     
-    float healthRatio;
-    Rect damage,health;
-    Color red = gfc_color8(100,0,0,255);
-    Color green = gfc_color8(50,208,0,255);
-    float barX,barY;
-    float barLength, barWidth = 32;
+    
 
     
     /*program initializtion*/
@@ -58,6 +54,7 @@ int main(int argc, char * argv[])
     font_init();
     gf2d_sprite_init(1024);
     entity_system_init(1024);
+    icon_init();
     
     SDL_ShowCursor(SDL_DISABLE);
     
@@ -83,8 +80,8 @@ int main(int argc, char * argv[])
 
     player_shuffle(player);
     player_draw(player,10);
-    barLength = 128 * player->scale.x;
 
+    Entity *icon = icon_new(vector2d(225,100),ChoiceBattle);
     while(!done)
     {
         gfc_input_update();
@@ -111,17 +108,6 @@ int main(int argc, char * argv[])
 
             //entities middle
             entity_system_draw();
-
-            healthRatio = (float)player->health / (float)player->healthMax;
-            
-            barX = player->position.x - (64 * player->scale.x);
-            barY = player->position.y + (64 * player->scale.y);
-
-            damage = gfc_rect(barX,barY, barLength,barWidth);
-            health = gfc_rect(barX,barY,barLength * healthRatio, barWidth);
-            
-            gf2d_draw_rect_filled(damage,red);
-            gf2d_draw_rect_filled(health,green);
 
             entity_highlight_all();
 
