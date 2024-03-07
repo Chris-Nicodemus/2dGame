@@ -18,6 +18,7 @@ typedef enum
 {
     Player,
     Icon,
+    MapIcon,
     Card,
     Enemy
 } EntType;

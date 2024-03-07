@@ -17,7 +17,8 @@
 
 Bool leftClicked;
 Bool rightClicked;
-State state = Choice;
+State oldState;
+State state = Combat;
 
 int main(int argc, char * argv[])
 {
@@ -81,7 +82,6 @@ int main(int argc, char * argv[])
     player_shuffle(player);
     player_draw(player,10);
 
-    Entity *icon = icon_new(vector2d(225,100),ChoiceBattle);
     while(!done)
     {
         gfc_input_update();
@@ -149,7 +149,18 @@ int main(int argc, char * argv[])
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
-        
+        if(gfc_input_command_pressed("map"))
+        {
+            if(state == Map)
+            {
+                state = oldState;
+            }
+            else
+            {
+                oldState = state;
+                state = Map;
+            }
+        }
 
         if (keys[SDL_SCANCODE_ESCAPE])
         {

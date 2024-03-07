@@ -140,7 +140,7 @@ Bool entity_active(Entity *self)
             else
                 return false;
         case Map:
-            if(type == Icon)
+            if(type == MapIcon)
                 return true;
             else
                 return false;
@@ -163,7 +163,8 @@ void entity_think(Entity *self)
     if(!entity_active(self))
     return;
 
-    
+    self->bounds = gfc_rect(self->position.x + self->drawOffsetX,self->position.y + self->drawOffsetY,self->scale.x * self->pixel.x,self->scale.y * self->pixel.y);
+
     mButton = SDL_GetMouseState(&mx,&my);
     
     if(gfc_point_in_rect(vector2d(mx,my),self->bounds))

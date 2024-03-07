@@ -52,14 +52,16 @@ void icon_init()
     //no highlight and draw offset is on for all map sprites
     icon.noHighlight = true;
     icon.offset = true;
-    icon.scaleX = 1;
-    icon.scaleY = 1;
+    icon.scaleX = 0.1;
+    icon.scaleY = 0.1;
 
     icon_manager.icons[0] = icon;
 
     icon.sprite = gf2d_sprite_load_image("images/icons/mapBattle.png");
     icon.x = 32;
     icon.y = 32;
+    icon.scaleX = 3;
+    icon.scaleY = 3;
 
     icon_manager.icons[1] = icon;
     
@@ -140,8 +142,12 @@ Entity *icon_new(Vector2D pos, Icons icon)
     ent->think = icon_think;
     ent->update = icon_update;
     ent->leftClick = icon_leftClick;
-    ent->type = Icon;
     ent->bounds = gfc_rect(ent->position.x + ent->drawOffsetX,ent->position.y + ent->drawOffsetY,ent->scale.x * ent->pixel.x,ent->scale.y * ent->pixel.y);
+
+    if(icon < ChoiceBattle)
+        ent->type = MapIcon;
+    else
+        ent->type = Icon;
     return ent;
 }
 
@@ -150,8 +156,6 @@ void icon_think(Entity *self)
     if(!self) return;
 
     //IconInfo info = icon_manager.icons[(Icons)self->data];
-
-    self->bounds = gfc_rect(self->position.x + self->drawOffsetX,self->position.y + self->drawOffsetY,self->scale.x * self->pixel.x,self->scale.y * self->pixel.y);
     //slog("%i",(int)self->data);
 }
 

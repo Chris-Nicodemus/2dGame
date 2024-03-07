@@ -1,8 +1,18 @@
 #include "simple_logger.h"
 #include "world.h"
 #include "entity.h"
+#include "icon.h"
 
 extern State state;
+static Vector2D choice1;
+static Vector2D choice2;
+static Vector2D choice3;
+
+static Vector2D map1;
+static Vector2D map2;
+static Vector2D map3;
+static Vector2D map4;
+static Vector2D map5;
 
 World *world_new()
 {
@@ -14,6 +24,15 @@ World *world_new()
         slog("failed to allocate world");
         return NULL;
     }
+    choice1 = vector2d(150,100);
+    choice2 = vector2d(900,100);
+    choice3 = vector2d(1675,100);
+
+    map1 = vector2d(920,1275);
+    map2 = vector2d(1525,1260);
+    map3 = vector2d(1660,650);
+    map4 = vector2d(1190,1020);
+    map5 = vector2d(650,330);
 
     world->icons = gfc_list_new();
     world->bgs = gfc_list_new();
@@ -22,6 +41,20 @@ World *world_new()
     world->name = "images/backgrounds/cityDay.png";
     world->scale = vector2d(1.04166667,1.111111111);
 
+    //choice icons
+    gfc_list_append(world->icons, icon_new(choice1,ChoiceBattle));
+    gfc_list_append(world->icons, icon_new(choice2,ChoiceExplore));
+    gfc_list_append(world->icons, icon_new(choice3,ChoiceShrine));
+
+    //map icons
+    gfc_list_append(world->icons, icon_new(map1, Question));
+    gfc_list_append(world->icons, icon_new(map2, MapBattle));
+    gfc_list_append(world->icons, icon_new(map3, MapShrine));
+    gfc_list_append(world->icons, icon_new(map4, Question));
+    gfc_list_append(world->icons, icon_new(map5, Question));
+    
+
+    //bg sprites
     gfc_list_append(world->bgs,gf2d_sprite_load_image("images/backgrounds/cityDay.png"));
     gfc_list_append(world->bgs,gf2d_sprite_load_image("images/backgrounds/cityNight.png"));
     gfc_list_append(world->bgs,gf2d_sprite_load_image("images/backgrounds/stoneWall.jpg"));
@@ -33,7 +66,8 @@ void world_free(World *world)
 {
     if(!world) return;
 
-    free (world->name);
+    if(world->name)
+    free(world->name);
 
     gfc_list_delete(world->icons);
 

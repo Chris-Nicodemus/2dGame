@@ -103,7 +103,6 @@ void player_update(Entity *self)
     //slog("frame: %f", self->frame);
     self->drawOffsetX = -self->pixel.x * self->scale.y * 0.5;
     self->drawOffsetY = -self->pixel.y * self->scale.y * 0.5;
-    self->bounds = gfc_rect(self->position.x + self->drawOffsetX,self->position.y + self->drawOffsetY,self->scale.x * self->pixel.x,self->scale.y * self->pixel.y);
     //slog("frame: %i",(int)self->frame);
 }
 

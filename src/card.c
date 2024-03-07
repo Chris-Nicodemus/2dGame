@@ -70,7 +70,6 @@ void card_update(Entity *self)
     if(!self)
     return;
 
-    self->bounds = gfc_rect(self->position.x + self->drawOffsetX,self->position.y + self->drawOffsetY,self->scale.x * self->pixel.x,self->scale.y * self->pixel.y);
 }
 
 void card_free(Entity *self)
