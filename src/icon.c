@@ -19,9 +19,17 @@ typedef struct
     Uint32 iconMax;
 }IconManager;
 
-IconManager icon_manager = {0};
+static IconManager icon_manager = {0};
+static List *tempIcons;
+static World *world;
+static Entity *player;
 
 extern State state;
+extern EventType event;
+extern int level;
+
+Uint32 graceInterval = 100;
+Uint32 grace;
 
 void icon_think(Entity *self);
 void icon_update(Entity *self);
@@ -33,7 +41,8 @@ void icon_quit()
     if(icon_manager.icons)
     free(icon_manager.icons);
 
-    
+    gfc_list_delete(tempIcons);
+
     memset(&icon_manager,0,sizeof(IconManager));
 
     slog("icon close");
@@ -43,6 +52,8 @@ void icon_init()
 {
     icon_manager.iconMax = 32;
     icon_manager.icons = gfc_allocate_array(sizeof(IconInfo),icon_manager.iconMax);
+
+    tempIcons = gfc_list_new();
 
     IconInfo icon;
 
@@ -99,6 +110,15 @@ void icon_init()
     icon.sprite = gf2d_sprite_load_image("images/icons/shrine.png");
 
     icon_manager.icons[8] = icon;
+
+    icon.sprite = icon_manager.icons[4].sprite;
+    icon.noHighlight = false;
+    icon.scaleX = 30;
+    icon.scaleY = 30;
+    icon.x = 32;
+    icon.y = 32;
+
+    icon_manager.icons[9] = icon;
     atexit(icon_quit);
 }
 
@@ -129,7 +149,7 @@ void icon_set_sprite(Entity *self, Icons icon)
     }
     
     self->noHighlight = ref.noHighlight;
-
+    self->iconType = (int)icon;
 }
 
 Entity *icon_new(Vector2D pos, Icons icon)
@@ -144,13 +164,30 @@ Entity *icon_new(Vector2D pos, Icons icon)
     ent->leftClick = icon_leftClick;
     ent->bounds = gfc_rect(ent->position.x + ent->drawOffsetX,ent->position.y + ent->drawOffsetY,ent->scale.x * ent->pixel.x,ent->scale.y * ent->pixel.y);
 
+
     if(icon < ChoiceBattle)
         ent->type = MapIcon;
+    else if (icon < EventShrine)
+        ent->type = ChoiceIcon;
     else
-        ent->type = Icon;
+        ent->type = EventIcon;
+
     return ent;
 }
 
+void icon_get_world(World *w)
+{
+    if(!w) return;
+
+    world = w;
+}
+
+void icon_get_player(Entity *p)
+{
+    if(!p) return;
+
+    player = p;
+}
 void icon_think(Entity *self)
 {
     if(!self) return;
@@ -165,7 +202,118 @@ void icon_update(Entity *self)
 
 }
 
+//starts event based on event type
+void event_start(EventType type)
+{
+    state = Event;
+    
+
+    //slog("%i", state);
+
+    switch(type)
+    {
+        case None:
+        slog("Event start fail");
+        return;
+        case Explore:
+        slog("Explore event");
+        return;
+        case Shop:
+        slog("Shop event");
+        return;
+        case Shrine:
+        slog("Shrine event");
+        gfc_list_append(tempIcons,icon_new(vector2d(1220,480), EventShrine));
+    }
+
+    grace = SDL_GetTicks() + graceInterval;
+
+    event = type;
+}
+
+//closes current event, updates state and map
+void event_close()
+{
+    int i;
+    Entity *ent;
+    while(gfc_list_get_count(tempIcons) > 0)
+    {
+        i = gfc_list_get_count(tempIcons) - 1;
+        ent = gfc_list_get_nth(tempIcons,i);
+
+        if(ent) entity_free(ent);
+
+        gfc_list_delete_last(tempIcons);
+    }
+
+    state = Choice;
+    
+
+    if(level < 5)
+    {
+        ent = gfc_list_get_nth(world->icons,level + 3);
+        switch(event)
+        {
+            case None:
+            slog("failure");
+            break;
+            case Explore:
+            icon_set_sprite(ent,MapExplore);
+            break;
+            case Shop:
+            icon_set_sprite(ent, MapShop);
+            break;
+            case Shrine:
+            icon_set_sprite(ent, MapShrine);
+            break;
+        }
+
+        level++;
+    }
+    event = None;
+}
 void icon_leftClick(Entity *self)
 {
     if(!self) return;
+
+    Icons icon;
+    int playerHealthGain;
+
+    icon = self->iconType;
+
+
+    switch(icon)
+    {
+        //skip anything not clickable
+        case ChoiceBattle:
+        slog("Battle Click");
+        return;
+
+        case ChoiceExplore:
+        slog("Explore Click");
+        return;
+
+        case ChoiceShrine:
+        event_start(Shrine);
+        return;
+
+        case EventShrine:
+        //adds cooldown before you can click to end event
+        if(grace > SDL_GetTicks()) return;
+
+        playerHealthGain = (int)(player->healthMax * 0.33);
+        if(player->health + playerHealthGain > player->healthMax)
+        {
+            player->health = player->healthMax;
+        }
+        else
+        {
+            player->health = player->health + playerHealthGain;
+        }
+        event_close();
+        return;
+
+        default:
+        return;
+    }
 }

@@ -17,11 +17,20 @@ typedef enum
 typedef enum
 {
     Player,
-    Icon,
+    ChoiceIcon,
     MapIcon,
+    EventIcon,
     Card,
     Enemy
 } EntType;
+
+typedef enum
+{
+    None,
+    Explore,
+    Shop,
+    Shrine
+} EventType;
 
 typedef struct Entity_S
 {
@@ -37,6 +46,7 @@ typedef struct Entity_S
     struct Entity_S *owner; //for cards to have a reference to their owner and enemies to have a reference to the player
     Bool noHighlight;   //true if you do not want entity to get highlighted on mouse
     EntType type;       //type of entity
+    int iconType;       //if icon, type of icon
     
 
     int health;
@@ -44,6 +54,7 @@ typedef struct Entity_S
     int block;
     int energy;
     int energyMax;
+    int overload;
     
     void (*think) (struct Entity_S *self);
     void (*update) (struct Entity_S *self);

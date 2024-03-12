@@ -4,13 +4,14 @@
 #include "gfc_list.h"
 #include "gf2d_sprite.h"
 
+
 typedef struct 
 {
     Sprite *background;
     Vector2D scale;
     char    *name;
     List    *bgs;
-    List    *icons;     //List of entities for icons
+    List    *icons;     //List of entities for permanent icons
 } World;
 
 

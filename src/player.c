@@ -43,7 +43,7 @@ Entity *player_new(Vector2D pos)
     ent->rightClick = player_rightClick;
     ent->draw = player_ui;
     ent->healthMax = 89;
-    ent->health = ent->healthMax; 
+    ent->health = 45;//ent->healthMax; 
     ent->energyMax = 3;
     ent->energy = ent->energyMax;
     ent->type = Player;

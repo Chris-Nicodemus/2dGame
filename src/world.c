@@ -48,8 +48,8 @@ World *world_new()
 
     //map icons
     gfc_list_append(world->icons, icon_new(map1, Question));
-    gfc_list_append(world->icons, icon_new(map2, MapBattle));
-    gfc_list_append(world->icons, icon_new(map3, MapShrine));
+    gfc_list_append(world->icons, icon_new(map2, Question));
+    gfc_list_append(world->icons, icon_new(map3, Question));
     gfc_list_append(world->icons, icon_new(map4, Question));
     gfc_list_append(world->icons, icon_new(map5, Question));
     
@@ -80,7 +80,7 @@ void world_get_state(World *world)
 {
     if(!world) return;
 
-    
+    //slog("%i",state);
     switch(state)
     {
         case Combat:
@@ -92,6 +92,7 @@ void world_get_state(World *world)
             }
             return;
         case Event:
+            //slog("getting here");
             if(strcmp(world->name,"images/backgrounds/cityNight.png"))
             {
                 world->name = "images/backgrounds/cityNight.png";

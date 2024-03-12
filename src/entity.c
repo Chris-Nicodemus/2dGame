@@ -130,12 +130,12 @@ Bool entity_active(Entity *self)
             else
                 return false;
         case Event:
-            if(type == Player || type == Card)
+            if(type == Player || type == Card || type == EventIcon)
                 return true;
             else
                 return false;
         case Choice:
-            if(type == Icon)
+            if(type == ChoiceIcon)
                 return true;
             else
                 return false;

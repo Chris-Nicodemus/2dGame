@@ -18,7 +18,9 @@
 Bool leftClicked;
 Bool rightClicked;
 State oldState;
-State state = Combat;
+State state = Choice;
+EventType event = None;
+int level = 0;
 
 int main(int argc, char * argv[])
 {
@@ -62,10 +64,12 @@ int main(int argc, char * argv[])
     /*demo setup*/
     //sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     world = world_new();
+    icon_get_world(world);
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     /*main game loop*/
 
     Entity *player = player_new(vector2d(690,740));
+    icon_get_player(player);
     FILE *deck = fopen("config/deck.json","r");
     if(get_file_Size(deck) == 0)
     {
@@ -80,7 +84,7 @@ int main(int argc, char * argv[])
     fclose(deck);
 
     player_shuffle(player);
-    player_draw(player,10);
+    //player_draw(player,10);
 
     while(!done)
     {
@@ -116,7 +120,7 @@ int main(int argc, char * argv[])
 
             if(mButton == SDL_BUTTON_LEFT && !leftClicked)
             {
-                slog("x: %i, y: %i",mx,my);
+                //slog("x: %i, y: %i",mx,my);
                 leftClicked = true;
             }
             else if(leftClicked && mButton != SDL_BUTTON_LEFT)
