@@ -18,14 +18,18 @@
 Bool leftClicked;
 Bool rightClicked;
 State oldState;
-State state = Choice;
+State state = Combat;
 EventType event = None;
 int level = 0;
+
+List *deckDisplay;
+Bool showDeck = false;
 
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
     int done = 0;
+    //int i; general use
     const Uint8 * keys;
     //Sprite *sprite;
     World *world;
@@ -37,7 +41,7 @@ int main(int argc, char * argv[])
     Sprite *mouse;
     Color mouseColor = gfc_color8(255,100,255,200);
     
-    
+    deckDisplay = gfc_list_new();
 
     
     /*program initializtion*/
@@ -149,7 +153,17 @@ int main(int argc, char * argv[])
                 &mouseColor,
                 (int)mf);
 
-            font_draw_text("Testing!",FS_Medium,GFC_COLOR_LIGHTBLUE,vector2d(20,30),vector2d(3,3));
+            //font_draw_text("Testing!",FS_Medium,GFC_COLOR_LIGHTBLUE,vector2d(20,30),vector2d(3,3));
+
+            if(showDeck)
+            {
+                player_show_deck(player);
+            }
+            else if(!showDeck && gfc_list_get_count(deckDisplay) > 0)
+            {
+                //slog("attempting delete");
+                player_show_deck_close();
+            }
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
@@ -164,6 +178,14 @@ int main(int argc, char * argv[])
                 oldState = state;
                 state = Map;
             }
+        }
+
+        if(gfc_input_command_pressed("deck"))
+        {
+            if(!showDeck)
+            showDeck = true;
+            else
+            showDeck = false;
         }
 
         if (keys[SDL_SCANCODE_ESCAPE])

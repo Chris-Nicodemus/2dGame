@@ -4,6 +4,7 @@
 #include "simple_logger.h"
 #include "simple_json.h"
 #include "gfc_input.h"
+#include "gf2d_draw.h"
 #include "player.h"
 #include "card.h"
 
@@ -15,6 +16,7 @@ void player_rightClick(Entity *self);
 void player_new_deck(Entity *self);
 void player_ui(Entity *self);
 
+extern List *deckDisplay;
 
 Entity *player_new(Vector2D pos)
 {
@@ -342,6 +344,97 @@ void player_ui(Entity *self)
             
             gf2d_draw_rect_filled(damage,red);
             gf2d_draw_rect_filled(health,green);
+}
+
+void player_deck_arrange(Entity *self)
+{
+    int i, j;
+    int row = 0;
+    int xOffset = 1;
+    float vertSpace, horiSpace;
+
+    Entity *card;
+
+    if(!self) return;
+
+    vertSpace = 49.5;
+    horiSpace = 42.3;
+
+    j = gfc_list_get_count(deckDisplay);
+    for(i = 0; i < j; i++)
+    {
+        card = gfc_list_get_nth(deckDisplay,i);
+        card->position = vector2d(380.0 + (horiSpace + (card->pixel.x * card->scale.x)) * xOffset, (vertSpace + card->pixel.y * card->scale.y) * row);
+        //slog("x: %f, y: %f",card->position.x,card->position.y);
+        //slog("%i", (i + 1) % 5);
+        if((i + 1) % 5 == 0)
+        {
+            row++;
+            xOffset = 0;
+            //slog("i: %i, row: %i",i, row);
+        }
+        xOffset++;
+    }
+
+    //slog("%f, %f", card->position.x,card->position.y);
+    //slog("%i", row);
+
+}
+
+void player_deck_check(Entity *self)
+{
+    Entity *card;
+    List *deck;
+    int i;
+
+    if(!self) return;
+
+    deck = gfc_list_get_nth(self->data,0);
+
+    if(gfc_list_get_count(deckDisplay) != gfc_list_get_count(deck))
+    {
+        while(gfc_list_get_count(deckDisplay) > 0)
+        {
+            i = gfc_list_get_count(deckDisplay) - 1;
+            entity_free(gfc_list_get_nth(deckDisplay,i));
+            gfc_list_delete_last(deckDisplay);
+        }
+
+        for(i = 0; i < gfc_list_get_count(deck); i++)
+        {
+            card = card_new(gfc_list_get_nth(deck, i),NULL);
+            gfc_list_append(deckDisplay,card);
+        }
+
+        player_deck_arrange(self);
+    }
+}
+
+void player_show_deck(Entity *self)
+{
+    Rect screen;
+    Color dark;
+    if(!self) return;
+    
+    screen = gfc_rect(480,0,1440,1440);
+    dark = gfc_color8(50,50,50,128);
+
+    //this sets the deck to be drawn if it does not have the same amound of elements as the player deck
+    player_deck_check(self);
+    
+    
+    gf2d_draw_rect_filled(screen,dark);
+}
+
+void player_show_deck_close()
+{
+    int i;
+    while(gfc_list_get_count(deckDisplay) > 0)
+    {
+        i = gfc_list_get_count(deckDisplay) - 1;
+        entity_free(gfc_list_get_nth(deckDisplay,i));
+        gfc_list_delete_last(deckDisplay);
+    }
 }
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop

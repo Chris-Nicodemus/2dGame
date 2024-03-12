@@ -77,7 +77,6 @@ void card_free(Entity *self)
     if(!self)
     return;
 
-    self->data = NULL;
 }
 
 void card_leftClick(Entity *self)

@@ -47,6 +47,17 @@ void player_save_deck(Entity *self);
  * @param self the player in question
 */
 void player_load_deck(Entity *self);
+
+/**
+ * @brief draw the entire deck for the player to view what their deck is
+*/
+void player_show_deck(Entity *self);
+
+/**
+ * @delete the current list of entities showing the deck
+*/
+void player_show_deck_close();
+
 /*player custom data notes
 data is turned into a list
 0 - deck            sacred decklist of the player during a run
