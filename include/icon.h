@@ -15,7 +15,8 @@ typedef enum
     ChoiceExplore,
     ChoiceShop,
     ChoiceShrine,
-    EventShrine
+    EventShrine,
+    EventChest
 } Icons;
 
 /**
@@ -49,4 +50,15 @@ void icon_get_world(World *w);
 */
 void icon_get_player(Entity *p);
 //data will contain the icon type from the enumeration
+
+/**
+ * @brief closes the current event
+*/
+void event_close();
+
+/**
+ * @brief get the text releted for the event
+ * @return the text to get 
+*/
+char *icon_get_event_text();
 #endif

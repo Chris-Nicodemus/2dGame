@@ -18,7 +18,7 @@
 Bool leftClicked;
 Bool rightClicked;
 State oldState;
-State state = Combat;
+State state = Choice;
 EventType event = None;
 int level = 0;
 
@@ -154,6 +154,12 @@ int main(int argc, char * argv[])
                 (int)mf);
 
             //font_draw_text("Testing!",FS_Medium,GFC_COLOR_LIGHTBLUE,vector2d(20,30),vector2d(3,3));
+
+            if(event != None)
+            {
+                //slog("%i",event);
+                font_draw_text(icon_get_event_text(),FS_Medium,gfc_color(1,1,1,1),vector2d(20,30),vector2d(2,2));
+            }
 
             if(showDeck)
             {

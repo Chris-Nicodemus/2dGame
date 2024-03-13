@@ -1,6 +1,7 @@
 #include "simple_logger.h"
 #include "gfc_input.h"
 #include "card.h"
+#include "icon.h"
 
 void card_think(Entity *self);
 void card_update(Entity *self);
@@ -9,6 +10,9 @@ void card_leftClick(Entity *self);
 void card_rightClick(Entity *self);
 
 void find_sprite(Entity *self);
+
+extern State state;
+
 
 Entity *card_new(char *name, Entity *player)
 {
@@ -53,6 +57,27 @@ void find_sprite(Entity *self)
     }
 }
 
+void card_add_to_deck(Entity *self)
+{
+    if(!self) return;
+
+    Entity *player = entity_get_player();
+
+    if(!player) return;
+
+    List *deck = gfc_list_get_nth(player->data, 0);
+
+    slog("Added %s to deck", self->data);
+    gfc_list_append(deck, self->data);
+
+    entity_free(self);
+
+    if(state == Event)
+    {
+        event_close();
+    }
+}
+
 void card_think(Entity *self)
 {
     if(!self)
@@ -83,6 +108,13 @@ void card_leftClick(Entity *self)
 {
     if(!self) return;
 
+    if(self->gift)
+    {
+        card_add_to_deck(self);
+    }
+
+    if(!self->owner) return;
+
     slog("card was left clicked");
 }
 
@@ -93,6 +125,25 @@ void card_rightClick(Entity *self)
     slog("card was right clicked");
 }
 
+char *card_get_random()
+{
+    int i;
+    i = (int) (gfc_random() * 2);
+
+    switch(i)
+    {
+        case 0:
+        return "strike";
+
+        case 1:
+        return "defend";
+
+        default:
+        return "fail";
+    }
+
+    return "fail";
+}
 //51 pixel space between
 //1154 pixels down
 //189 width

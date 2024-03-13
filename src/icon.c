@@ -1,6 +1,9 @@
 #include "simple_logger.h"
 #include "gfc_list.h"
+#include "font.h"
 #include "icon.h"
+#include "card.h"
+
 
 typedef struct
 {
@@ -119,6 +122,13 @@ void icon_init()
     icon.y = 32;
 
     icon_manager.icons[9] = icon;
+
+    icon.sprite = gf2d_sprite_load_image("images/icons/chest.png");
+    icon.scaleX = 15;
+    icon.scaleY = 15;
+
+    icon_manager.icons[10] = icon;
+    
     atexit(icon_quit);
 }
 
@@ -202,6 +212,33 @@ void icon_update(Entity *self)
 
 }
 
+char *icon_get_event_text()
+{
+    char *text;
+
+    switch(event)
+    {
+        case Shrine:
+        text = "Rest at the shrine";
+        break;
+        
+        case Chest:
+        text = "A chest! What might it hold?";
+        break;
+
+        default:
+        text = "Event fail";
+    }
+
+    return text;
+}
+
+void event_set()
+{
+    event = Chest;
+}
+
+
 //starts event based on event type
 void event_start(EventType type)
 {
@@ -217,18 +254,26 @@ void event_start(EventType type)
         return;
         case Explore:
         slog("Explore event");
-        return;
+        event_set();
+        gfc_list_append(tempIcons,icon_new(vector2d(1220,480), EventChest));
+        break;
         case Shop:
         slog("Shop event");
-        return;
+        break;
         case Shrine:
         slog("Shrine event");
         gfc_list_append(tempIcons,icon_new(vector2d(1220,480), EventShrine));
+        event = Shrine;
+        break;
+
+        default:
+        slog("Event start fail");
+        return;
     }
 
     grace = SDL_GetTicks() + graceInterval;
 
-    event = type;
+
 }
 
 //closes current event, updates state and map
@@ -257,14 +302,14 @@ void event_close()
             case None:
             slog("failure");
             break;
-            case Explore:
-            icon_set_sprite(ent,MapExplore);
-            break;
             case Shop:
             icon_set_sprite(ent, MapShop);
             break;
             case Shrine:
             icon_set_sprite(ent, MapShrine);
+            break;
+            default:
+            icon_set_sprite(ent,MapExplore); //any other event will be explore
             break;
         }
 
@@ -272,12 +317,15 @@ void event_close()
     }
     event = None;
 }
+
+
 void icon_leftClick(Entity *self)
 {
     if(!self) return;
 
     Icons icon;
     int playerHealthGain;
+    Entity *ent; //general use
 
     icon = self->iconType;
 
@@ -291,6 +339,7 @@ void icon_leftClick(Entity *self)
 
         case ChoiceExplore:
         slog("Explore Click");
+        event_start(Explore);
         return;
 
         case ChoiceShrine:
@@ -299,7 +348,7 @@ void icon_leftClick(Entity *self)
 
         case EventShrine:
         //adds cooldown before you can click to end event
-        if(grace > SDL_GetTicks()) return;
+        if(grace > SDL_GetTicks()) break;
 
         playerHealthGain = (int)(player->healthMax * 0.33);
         if(player->health + playerHealthGain > player->healthMax)
@@ -311,6 +360,19 @@ void icon_leftClick(Entity *self)
             player->health = player->health + playerHealthGain;
         }
         event_close();
+        return;
+
+        case EventChest:
+        if(grace > SDL_GetTicks()) break;
+        entity_free(self);
+        ent = card_new(card_get_random(),NULL);
+        ent->gift = true;
+        ent->scale = vector2d(.36,.36);
+        ent->position = vector2d(1190,470);
+        
+        
+        
+        //event_close();
         return;
 
         default:

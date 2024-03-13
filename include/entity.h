@@ -29,7 +29,8 @@ typedef enum
     None,
     Explore,
     Shop,
-    Shrine
+    Shrine,
+    Chest
 } EventType;
 
 typedef struct Entity_S
@@ -44,6 +45,7 @@ typedef struct Entity_S
     float drawOffsetX; //how much to offset draw and bounds. Make negative to move left
     float drawOffsetY; //how much to offset draw and bounds. Make negative to move up
     struct Entity_S *owner; //for cards to have a reference to their owner and enemies to have a reference to the player
+    Bool gift;          //true if the card is supposed to be able to be claimed by the player
     Bool noHighlight;   //true if you do not want entity to get highlighted on mouse
     EntType type;       //type of entity
     int iconType;       //if icon, type of icon
@@ -111,4 +113,10 @@ void entity_system_draw();
  * highlight all moused entities
 */
 void entity_highlight_all();
+
+/**
+ * @brief get a reference to the player
+ * @return the player
+*/
+Entity *entity_get_player();
 #endif

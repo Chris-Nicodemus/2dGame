@@ -125,15 +125,18 @@ Bool entity_active(Entity *self)
     if(!self) return false;
 
     type = self->type;
+
+    if(type == Card) return true;
+    
     switch(state)
     {
         case Combat:
-            if(type == Player || type == Enemy || type == Card)
+            if(type == Player || type == Enemy)
                 return true;
             else
                 return false;
         case Event:
-            if(type == Player || type == Card || type == EventIcon)
+            if(type == Player || type == EventIcon)
                 return true;
             else
                 return false;
@@ -289,4 +292,22 @@ void entity_highlight_all()
         entity_highlight(&entity_manager.entity_list[i]);
     }
 
+}
+
+Entity *entity_get_player()
+{
+    int i;
+
+    for(i = 0; entity_manager.entity_max; i++)
+    {
+        if(!entity_manager.entity_list[i]._inuse)
+        continue;
+
+        if(entity_manager.entity_list[i].energyMax > 0)
+        {
+            return &entity_manager.entity_list[i];
+        }
+    }
+
+    return NULL;
 }

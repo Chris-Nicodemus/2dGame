@@ -12,4 +12,10 @@
 */
 Entity *card_new(char *name, Entity *player);
 
+/**
+ * @brief gives a string associated with a card
+ * @return the string
+*/
+char *card_get_random();
+
 #endif
