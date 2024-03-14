@@ -5,6 +5,7 @@
 #include "simple_json.h"
 #include "gfc_input.h"
 #include "gf2d_draw.h"
+#include "font.h"
 #include "player.h"
 #include "card.h"
 
@@ -36,7 +37,9 @@ Entity *player_new(Vector2D pos)
     ent->drawOffsetX = -ent->pixel.x * ent->scale.x * 0.5;
     ent->drawOffsetY = -ent->pixel.y * ent->scale.y * 0.5;
     ent->bounds = gfc_rect(ent->position.x + ent->drawOffsetX,ent->position.y + ent->drawOffsetY,ent->scale.x * ent->pixel.x,ent->scale.y * ent->pixel.y);
-    ent->frame = 96;
+    ent->frameStart = 96;
+    ent->frame = ent->frameStart;
+    ent->frameEnd = 111;
     ent->flip = vector2d(1,0);
     ent->think = player_think;
     ent->update = player_update;
@@ -49,6 +52,7 @@ Entity *player_new(Vector2D pos)
     ent->energyMax = 3;
     ent->energy = ent->energyMax;
     ent->type = Player;
+    
 
     ent->data = gfc_list_new();
     
@@ -97,11 +101,11 @@ void player_update(Entity *self)
     return;
 
     //slog("updating");
-    self->frame = self->frame + 0.1;
-    if(self->frame >= 111)
+    /*self->frame = self->frame + 0.1;
+    if(self->frame >= self->frameEnd)
     {
-        self->frame = 96;
-    }
+        self->frame = self->frameStart;
+    }*/
     //slog("frame: %f", self->frame);
     self->drawOffsetX = -self->pixel.x * self->scale.y * 0.5;
     self->drawOffsetY = -self->pixel.y * self->scale.y * 0.5;
@@ -325,25 +329,39 @@ void player_load_deck(Entity *self)
 void player_ui(Entity *self)
 {
     float healthRatio;
-    Rect damage,health;
+    Rect damage,health,energyDisplay;
+    //Circle energyDisplay = gfc_circle(130,1000,100);
+    Color purple = gfc_color8(175, 99, 188, 255);
     Color red = gfc_color8(100,0,0,255);
     Color green = gfc_color8(50,208,0,255);
     float barX,barY;
     float barLength, barWidth = 32;
+    char *text = (char *)malloc(sizeof(char) * (10));
     
     if(!self) return;
 
     barLength = 128 * self->scale.x;
     healthRatio = (float)self->health / (float)self->healthMax;
             
-            barX = self->position.x - (64 * self->scale.x);
-            barY = self->position.y + (64 * self->scale.y);
+    barX = self->position.x - (64 * self->scale.x);
+    barY = self->position.y + (64 * self->scale.y);
 
-            damage = gfc_rect(barX,barY, barLength,barWidth);
-            health = gfc_rect(barX,barY,barLength * healthRatio, barWidth);
+    damage = gfc_rect(barX,barY, barLength,barWidth);
+    health = gfc_rect(barX,barY,barLength * healthRatio, barWidth);
             
-            gf2d_draw_rect_filled(damage,red);
-            gf2d_draw_rect_filled(health,green);
+    gf2d_draw_rect_filled(damage,red);
+    gf2d_draw_rect_filled(health,green);
+
+    sprintf(text,"%i / %i",self->health,self->healthMax);
+
+    font_draw_text(text,FS_Small, gfc_color(1,1,1,1), vector2d(self->position.x - (self->pixel.x * 0.5 * self->scale.x), self->position.y + (self->pixel.y * 0.5 * self->scale.y) + (barWidth *0.33)),vector2d(1.5,1.5));
+
+    sprintf(text,"%i / %i",self->energy,self->energyMax);
+
+    energyDisplay = gfc_rect(85,950,100,100);
+    gf2d_draw_rect_filled(energyDisplay,purple);
+
+    font_draw_text(text,FS_Small, gfc_color(1,1,1,1), vector2d(105, 1000) ,vector2d(1.5,1.5));
 }
 
 void player_deck_arrange(Entity *self)

@@ -12,7 +12,10 @@ void card_rightClick(Entity *self);
 void find_sprite(Entity *self);
 
 extern State state;
-
+extern Bool turn;
+extern Bool target;
+extern List *targets;
+extern int targetsNeeded;
 
 Entity *card_new(char *name, Entity *player)
 {
@@ -108,14 +111,33 @@ void card_leftClick(Entity *self)
 {
     if(!self) return;
 
+    //add earned card to deck
     if(self->gift)
     {
         card_add_to_deck(self);
     }
 
+    //all the resons to not do anything
     if(!self->owner) return;
 
+    if(state != Combat) return;
+
+    //slog("click");
+
+    if(!turn) return;
+
     slog("card was left clicked");
+
+    if(strcmp(self->data,"strike") == 0)
+    {
+        slog("getting here");
+        if(self->owner->energy < 1)
+        return;
+
+        self->owner->energy = self->owner->energy - 1;
+        target = true;
+        targetsNeeded = 1;
+    }
 }
 
 void card_rightClick(Entity *self)

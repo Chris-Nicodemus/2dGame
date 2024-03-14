@@ -116,6 +116,7 @@ void entity_free(Entity *self)
     //anything else allocated for the entity would get cleaned up here
     if(self->free)
     self->free(self);
+
 }
 
 Bool entity_active(Entity *self)
@@ -215,7 +216,14 @@ void entity_update(Entity *self)
     if(!self)
     return;
     //any stuff that all entities should do goes here
-
+    if(self->frameEnd)
+    {
+        self->frame = self->frame + 0.1;
+        if(self->frame >= self->frameEnd)
+        {
+            self->frame = self->frameStart;
+        }
+    }
     if(self->update)
     self->update(self);
 }

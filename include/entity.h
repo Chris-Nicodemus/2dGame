@@ -33,11 +33,20 @@ typedef enum
     Chest
 } EventType;
 
+typedef enum
+{
+    Basic,
+    Poison
+} DamageType;
+
 typedef struct Entity_S
 {
     Uint8  _inuse;
     Sprite *sprite;
     float frame; //sprite frame to render but needs to be cast as a Uint32
+    Uint32 frameStart; //frame starting point
+    Uint32 frameEnd;   //frame end point
+    int state;         //determines what animation to be doing
     Vector2D flip;   //tells renderer to flip image if necessary
     Vector2D position;    
     Vector2D scale;
@@ -49,6 +58,9 @@ typedef struct Entity_S
     Bool noHighlight;   //true if you do not want entity to get highlighted on mouse
     EntType type;       //type of entity
     int iconType;       //if icon, type of icon
+    int enemyType;      //if enemy, type of enemy
+    
+
     
 
     int health;

@@ -3,6 +3,14 @@
 
 #include "entity.h"
 
+typedef enum
+{
+    PlayerGroundIdle,
+    PlayerGroundAttack,
+    PlayerAirIdle,
+    PlayerAirAttack,
+    PlayerTransform
+} PlayerState;
 
 /**
  * @brief spawn a player

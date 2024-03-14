@@ -14,13 +14,21 @@
 #include "player.h"
 #include "card.h"
 #include "icon.h"
+#include "enemy.h"
 
 Bool leftClicked;
 Bool rightClicked;
 State oldState;
-State state = Choice;
+State state = Combat;
 EventType event = None;
 int level = 0;
+Bool turn = true;
+char *action;
+
+//stuff for player to hit enemies
+Bool target;
+List *targets;
+Uint8 targetsNeeded;
 
 List *deckDisplay;
 Bool showDeck = false;
@@ -29,7 +37,7 @@ int main(int argc, char * argv[])
 {
     /*variable declarations*/
     int done = 0;
-    //int i; general use
+    int i; //general use
     const Uint8 * keys;
     //Sprite *sprite;
     World *world;
@@ -42,7 +50,8 @@ int main(int argc, char * argv[])
     Color mouseColor = gfc_color8(255,100,255,200);
     
     deckDisplay = gfc_list_new();
-
+    targets = gfc_list_new();
+    action = (char *)malloc(sizeof(char) * (20));
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -62,6 +71,7 @@ int main(int argc, char * argv[])
     gf2d_sprite_init(1024);
     entity_system_init(1024);
     icon_init();
+    enemy_system_init(24);
     
     SDL_ShowCursor(SDL_DISABLE);
     
@@ -73,6 +83,8 @@ int main(int argc, char * argv[])
     /*main game loop*/
 
     Entity *player = player_new(vector2d(690,740));
+    Entity *bug = enemy_new(vector2d(1190,540),Bug);
+
     icon_get_player(player);
     FILE *deck = fopen("config/deck.json","r");
     if(get_file_Size(deck) == 0)
@@ -88,7 +100,7 @@ int main(int argc, char * argv[])
     fclose(deck);
 
     player_shuffle(player);
-    //player_draw(player,10);
+    player_draw(player,10);
 
     while(!done)
     {
@@ -124,7 +136,7 @@ int main(int argc, char * argv[])
 
             if(mButton == SDL_BUTTON_LEFT && !leftClicked)
             {
-                //slog("x: %i, y: %i",mx,my);
+                slog("x: %i, y: %i",mx,my);
                 leftClicked = true;
             }
             else if(leftClicked && mButton != SDL_BUTTON_LEFT)
@@ -169,6 +181,25 @@ int main(int argc, char * argv[])
             {
                 //slog("attempting delete");
                 player_show_deck_close();
+            }
+
+            if(state == Combat && target)
+            {
+                i = targetsNeeded - gfc_list_get_count(targets);
+                switch(i)
+                {
+                    case 1:
+                    font_draw_text("Select a target!",FS_Medium,gfc_color(1,1,1,1),vector2d(1000,60),vector2d(3,3));
+                    break;
+                    //2 does same as 3
+                    case 2:
+                    case 3:
+                    font_draw_text("Select targets!",FS_Medium,gfc_color(1,1,1,1),vector2d(1050,60),vector2d(3,3));
+                    break;
+                    //do nothing if error
+                    default:
+                    break;
+                }
             }
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
