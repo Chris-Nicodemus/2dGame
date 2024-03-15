@@ -3,6 +3,7 @@
 #include "font.h"
 #include "icon.h"
 #include "card.h"
+#include "player.h"
 
 
 typedef struct
@@ -30,6 +31,9 @@ static Entity *player;
 extern State state;
 extern EventType event;
 extern int level;
+
+extern Bool target;
+extern Bool turn;
 
 Uint32 graceInterval = 100;
 Uint32 grace;
@@ -128,6 +132,14 @@ void icon_init()
     icon.scaleY = 15;
 
     icon_manager.icons[10] = icon;
+
+    icon.sprite = gf2d_sprite_load_image("images/icons/button.png");
+    icon.scaleX = 0.5;
+    icon.scaleY = 0.5;
+    icon.x = 480;
+    icon.y = 480;
+
+    icon_manager.icons[11] = icon;
     
     atexit(icon_quit);
 }
@@ -179,9 +191,10 @@ Entity *icon_new(Vector2D pos, Icons icon)
         ent->type = MapIcon;
     else if (icon < EventShrine)
         ent->type = ChoiceIcon;
-    else
+    else if (icon < EndTurn)
         ent->type = EventIcon;
-
+    else
+        ent->type = CombatButton;
     return ent;
 }
 
@@ -335,6 +348,8 @@ void icon_leftClick(Entity *self)
         //skip anything not clickable
         case ChoiceBattle:
         slog("Battle Click");
+        state = Combat;
+        gfc_list_append(tempIcons,icon_new(vector2d(1950,920),EndTurn));
         return;
 
         case ChoiceExplore:
@@ -369,11 +384,22 @@ void icon_leftClick(Entity *self)
         ent->gift = true;
         ent->scale = vector2d(.36,.36);
         ent->position = vector2d(1190,470);
-        
-        
-        
         //event_close();
         return;
+
+        case EndTurn:
+        if(target) return;
+        
+        if(!entity_get_player())
+        {
+            slog("player not found");
+            return;
+        }
+        player_end_turn(entity_get_player());
+        return;
+        //turn = false;
+        //Entity *player = entity_get_player();
+        //player->energy = player->energyMax;
 
         default:
         return;

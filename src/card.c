@@ -169,6 +169,17 @@ char *card_get_random()
 
     return "fail";
 }
+
+char *card_toString(Entity *self)
+{
+    if(!self) return;
+
+    if(!strcmp(self->data,"strike")) return "strike";
+
+    if(!strcmp(self->data, "defend")) return "defend";
+
+    return "fail";
+}
 //51 pixel space between
 //1154 pixels down
 //189 width

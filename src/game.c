@@ -83,7 +83,8 @@ int main(int argc, char * argv[])
 
     Entity *player = player_new(vector2d(690,740));
     Entity *bug = enemy_new(vector2d(1190,540),Bug);
-
+    Entity *button = icon_new(vector2d(1950,920),EndTurn);
+    
     icon_get_player(player);
     FILE *deck = fopen("config/deck.json","r");
     if(get_file_Size(deck) == 0)
@@ -98,8 +99,10 @@ int main(int argc, char * argv[])
     }
     fclose(deck);
 
-    player_shuffle(player);
-    player_draw(player,10);
+    //player_shuffle(player);
+    //player_draw(player,10);
+    player_combat_start(player);
+    
 
     while(!done)
     {
@@ -137,6 +140,7 @@ int main(int argc, char * argv[])
             {
                 //slog("x: %i, y: %i",mx,my);
                 leftClicked = true;
+                //player_draw(player,1);
             }
             else if(leftClicked && mButton != SDL_BUTTON_LEFT)
             {

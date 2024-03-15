@@ -16,7 +16,8 @@ typedef enum
     ChoiceShop,
     ChoiceShrine,
     EventShrine,
-    EventChest
+    EventChest,
+    EndTurn
 } Icons;
 
 /**

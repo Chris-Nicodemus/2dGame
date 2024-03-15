@@ -20,6 +20,7 @@ typedef enum
     ChoiceIcon,
     MapIcon,
     EventIcon,
+    CombatButton,
     Card,
     Enemy
 } EntType;

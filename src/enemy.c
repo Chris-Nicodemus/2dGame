@@ -169,7 +169,7 @@ void enemy_leftClick(Entity *self)
     }
 
     //return if enough targets
-    slog("happening");
+    //slog("happening");
     if(gfc_list_get_count(targets) >= targetsNeeded) return;
 
     //return if already in list

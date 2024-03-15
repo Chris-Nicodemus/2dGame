@@ -72,6 +72,17 @@ void player_show_deck_close();
  * @param card the card to use
 */
 void player_play_card(Entity *self, Entity *card);
+
+/**
+ * @brief start the combat. Also checks to see if currentdeck is the same as the sacred deck at the start of the combat. If not, then remake the curent deck
+ * @param self the player
+*/
+void player_combat_start(Entity *self);
+/**
+ * @brief end the player's turn
+ * @param self the player in question
+*/
+void player_end_turn(Entity *self);
 /*player custom data notes
 data is turned into a list
 0 - deck            sacred decklist of the player during a run

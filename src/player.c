@@ -18,8 +18,10 @@ void player_rightClick(Entity *self);
 void player_new_deck(Entity *self);
 void player_ui(Entity *self);
 
+extern State state;
 extern List *deckDisplay;
 extern List *targets;
+extern Bool turn;
 
 Entity *player_new(Vector2D pos)
 {
@@ -232,10 +234,17 @@ void player_draw(Entity *self, Uint8 num)
 
     while((cards + 1  <= 10) && num > 0)
     {
+        //slog("drawing");
         //shuffle discard pile into deck if deck empty
         if(gfc_list_get_count(currentDeck) == 0)
         {
             player_shuffle(self);
+
+            if(gfc_list_get_count(currentDeck) == 0)
+            {
+                slog("deck empty!");
+                break;
+            }
         }    
         //slog("getting here");
         name = gfc_list_get_nth(currentDeck,0); //gets top card of deck
@@ -259,6 +268,9 @@ void player_arrange_hand(Entity *self)
     List *hand = gfc_list_get_nth(self->data,3);
 
     Entity *card = gfc_list_get_nth(hand,0);
+    if(!card)
+    return;
+
     card->position = vector2d(71, 1154);
 
     for(i = 0; i < gfc_list_get_count(hand); i++)
@@ -457,18 +469,62 @@ void player_show_deck_close()
     }
 }
 
-void player_play_card(Entity *self, Entity *card)
+void player_discard(Entity *self, Entity *card)
 {
-    Entity *target;
     List *discard;
     List *hand;
-    Bool success;
+
     if(!self) return;
 
     if(!card) return;
 
     discard = gfc_list_get_nth(self->data,2);
     hand = gfc_list_get_nth(self->data,3);
+
+    char* name = card_toString(card);
+    
+    gfc_list_append(discard,name);
+    
+    //delete card
+    gfc_list_delete_nth(hand, gfc_list_get_item_index(hand,card));
+    entity_free(card);
+
+    player_arrange_hand(self);
+}
+
+void player_discard_hand(Entity *self)
+{
+    List *hand;
+    Entity *card;
+    int i;
+    if(!self) return;
+
+    hand = gfc_list_get_nth(self->data,3);
+    if(!hand)
+    {
+        slog("failed to get hand");
+        return;
+    }
+
+    while(gfc_list_get_count(hand) > 0)
+    {
+        i = gfc_list_get_count(hand) - 1;
+        card = gfc_list_get_nth(hand,i);
+        //slog("happening");
+        player_discard(self,card);
+    }
+
+    //slog("%i",gfc_list_get_count(hand));
+}
+
+void player_play_card(Entity *self, Entity *card)
+{
+    Entity *target;
+    Bool success;
+    if(!self) return;
+
+    if(!card) return;
+
     if(!strcmp(card->data,"strike"))
     {
         target = gfc_list_get_nth(targets,0);
@@ -485,14 +541,62 @@ void player_play_card(Entity *self, Entity *card)
     if(success)
     {
         //add card to discard
-        gfc_list_append(discard,card->data);
-
-        //delete card
-        gfc_list_delete_nth(hand, gfc_list_get_item_index(hand,card));
-        entity_free(card);
-
-        player_arrange_hand(self);
+        player_discard(self,card);
     }
+}
+
+void player_end_turn(Entity *self)
+{
+    if(!self) return;
+
+    //slog("happening");
+    turn = false;
+    player_discard_hand(self);
+    player_draw(self,5);
+    self->energy = self->energyMax;
+    //slog("happening 2");
+    turn = true;
+}
+
+void player_combat_start(Entity *self)
+{
+    int i;
+    if(!self) return;
+
+    if(state != Combat)
+    state = Combat;
+
+    List *deck = gfc_list_get_nth(self->data,0);
+    List *current = gfc_list_get_nth(self->data,1);
+
+    //current deck
+    while(gfc_list_get_count(current) > 0)
+    {
+        i = gfc_list_get_count(current) - 1;
+
+        //remove the string then delete
+        /*if(gfc_list_get_nth(current,i))
+        free(gfc_list_get_nth(current,i));*/
+
+        gfc_list_delete_last(current);
+    }
+
+    //load current deck
+    for(i = 0; i < gfc_list_get_count(deck); i++)
+    {
+        gfc_list_append(current,gfc_list_get_nth(deck,i));
+    }
+    
+    player_shuffle(self);
+
+    player_draw(self, 5);
+
+    for(i = 0; i < gfc_list_get_count(current); i++)
+    {
+        //slog("%s",gfc_list_get_nth(current,i));
+    }
+
+    turn = true;
 }
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop

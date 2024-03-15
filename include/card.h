@@ -18,4 +18,10 @@ Entity *card_new(char *name, Entity *player);
 */
 char *card_get_random();
 
+/**
+ * @brief converts card type to string for use
+ * @param self the card
+ * @return the string for use
+*/
+char* card_toString(Entity *self);
 #endif

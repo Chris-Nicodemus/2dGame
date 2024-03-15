@@ -132,7 +132,7 @@ Bool entity_active(Entity *self)
     switch(state)
     {
         case Combat:
-            if(type == Player || type == Enemy)
+            if(type == Player || type == Enemy || type == CombatButton)
                 return true;
             else
                 return false;
