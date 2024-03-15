@@ -60,6 +60,9 @@ typedef struct Entity_S
     EntType type;       //type of entity
     int iconType;       //if icon, type of icon
     int enemyType;      //if enemy, type of enemy
+    int action;         //the action an enemy will do
+    int actionStrength; //the number associated with that action. (amount of damage or block to gain etc)
+    int actionStrength2;//if action has two things happen, this is the strength of the second action
     
 
     

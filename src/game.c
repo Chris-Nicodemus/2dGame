@@ -17,12 +17,16 @@
 #include "enemy.h"
 
 Bool leftClicked;
+Uint32 leftClickCooldown;
+Uint32 clickCooldownInterval = 150; //used for both left and right click
 Bool rightClicked;
+Uint32 rightClickCooldown;
+
 State oldState;
-State state = Combat;
+State state = Choice;
 EventType event = None;
 int level = 0;
-Bool turn = true;
+Bool turn = false;
 
 //stuff for player to hit enemies
 Bool target;
@@ -32,6 +36,7 @@ Uint8 targetsNeeded;
 List *deckDisplay;
 Bool showDeck = false;
 Entity *usedCard;
+
 
 int main(int argc, char * argv[])
 {
@@ -82,8 +87,8 @@ int main(int argc, char * argv[])
     /*main game loop*/
 
     Entity *player = player_new(vector2d(690,740));
-    Entity *bug = enemy_new(vector2d(1190,540),Bug);
-    Entity *button = icon_new(vector2d(1950,920),EndTurn);
+    //Entity *bug = enemy_new(vector2d(1190,540),Bug);
+    //Entity *button = icon_new(vector2d(1950,920),EndTurn);
     
     icon_get_player(player);
     FILE *deck = fopen("config/deck.json","r");
@@ -101,7 +106,7 @@ int main(int argc, char * argv[])
 
     //player_shuffle(player);
     //player_draw(player,10);
-    player_combat_start(player);
+    //player_combat_start(player);
     
 
     while(!done)
@@ -140,9 +145,11 @@ int main(int argc, char * argv[])
             {
                 //slog("x: %i, y: %i",mx,my);
                 leftClicked = true;
+                leftClickCooldown = SDL_GetTicks() + clickCooldownInterval;
+                //state = Event;
                 //player_draw(player,1);
             }
-            else if(leftClicked && mButton != SDL_BUTTON_LEFT)
+            else if(leftClicked && mButton != SDL_BUTTON_LEFT && SDL_GetTicks() > leftClickCooldown)
             {
                 leftClicked = false;
             }
@@ -169,11 +176,12 @@ int main(int argc, char * argv[])
                 (int)mf);
 
             //font_draw_text("Testing!",FS_Medium,GFC_COLOR_LIGHTBLUE,vector2d(20,30),vector2d(3,3));
-
+            //slog("%i",state);
             if(event != None)
             {
                 //slog("%i",event);
                 font_draw_text(icon_get_event_text(),FS_Medium,gfc_color(1,1,1,1),vector2d(20,30),vector2d(2,2));
+                //state = Event;
             }
 
             if(showDeck)

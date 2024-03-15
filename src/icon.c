@@ -3,6 +3,7 @@
 #include "font.h"
 #include "icon.h"
 #include "card.h"
+#include "enemy.h"
 #include "player.h"
 
 
@@ -41,6 +42,7 @@ Uint32 grace;
 void icon_think(Entity *self);
 void icon_update(Entity *self);
 void icon_leftClick(Entity *self);
+void end_turn_draw(Entity *self);
 //void icon_rightClick(Entity *self);
 
 void icon_quit()
@@ -172,6 +174,11 @@ void icon_set_sprite(Entity *self, Icons icon)
     
     self->noHighlight = ref.noHighlight;
     self->iconType = (int)icon;
+
+    if(icon == EndTurn)
+    self->draw = end_turn_draw;
+    else
+    self->draw = NULL;
 }
 
 Entity *icon_new(Vector2D pos, Icons icon)
@@ -304,30 +311,36 @@ void event_close()
         gfc_list_delete_last(tempIcons);
     }
 
-    state = Choice;
+    
     
 
     if(level < 5)
-    {
+    {   
         ent = gfc_list_get_nth(world->icons,level + 3);
-        switch(event)
+        if(state == Combat)
+        icon_set_sprite(ent, MapBattle);
+        
+        if(event != 0)
         {
-            case None:
-            slog("failure");
-            break;
-            case Shop:
-            icon_set_sprite(ent, MapShop);
-            break;
-            case Shrine:
-            icon_set_sprite(ent, MapShrine);
-            break;
-            default:
-            icon_set_sprite(ent,MapExplore); //any other event will be explore
-            break;
+            switch(event)
+            {
+                case None:
+                slog("failure");
+                break;
+                case Shop:
+                icon_set_sprite(ent, MapShop);
+                break;
+                case Shrine:
+                icon_set_sprite(ent, MapShrine);
+                break;
+                default:
+                icon_set_sprite(ent,MapExplore); //any other event will be explore
+                break;
+            }
         }
-
         level++;
     }
+    state = Choice;
     event = None;
 }
 
@@ -350,6 +363,8 @@ void icon_leftClick(Entity *self)
         slog("Battle Click");
         state = Combat;
         gfc_list_append(tempIcons,icon_new(vector2d(1950,920),EndTurn));
+        ent = enemy_new(vector2d(1600,740),Bug);
+        player_combat_start(entity_get_player());
         return;
 
         case ChoiceExplore:
@@ -358,6 +373,7 @@ void icon_leftClick(Entity *self)
         return;
 
         case ChoiceShrine:
+        state = Event;
         event_start(Shrine);
         return;
 
@@ -404,4 +420,22 @@ void icon_leftClick(Entity *self)
         default:
         return;
     }
+}
+
+void end_turn_draw(Entity *self)
+{
+    if(!self) return;
+
+    font_draw_text("End Turn",FS_Large,gfc_color(1,1,1,1),vector2d(self->position.x + (self->pixel.x * self->scale.x * 0.25) - 25,self->position.y + (self->pixel.y * self->scale.y * 0.5) - 10), vector2d(1.25,1.25));
+}
+
+void icon_combat_win(Entity *player)
+{
+    if(!player) return;
+
+    //put the hand back in the deck
+    player_discard_hand(player);
+    player_shuffle(player);
+
+    event_close();
 }

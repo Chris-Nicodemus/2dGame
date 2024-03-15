@@ -181,6 +181,7 @@ void entity_think(Entity *self)
     
     if(self->mouse && mButton == SDL_BUTTON_LEFT && !leftClicked)
     {
+        leftClicked = true;
         if(self->leftClick)
         self->leftClick(self);
     }
@@ -188,6 +189,7 @@ void entity_think(Entity *self)
     if(self->mouse && mButton == 4 && !rightClicked)
     {
         //slog("happening");
+        rightClicked = true;
         if(self->rightClick)
         self->rightClick(self);
     }

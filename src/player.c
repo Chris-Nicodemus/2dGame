@@ -348,9 +348,11 @@ void player_ui(Entity *self)
     Color purple = gfc_color8(175, 99, 188, 255);
     Color red = gfc_color8(100,0,0,255);
     Color green = gfc_color8(50,208,0,255);
+    Color blue = gfc_color8(84, 195, 212, 255);
     float barX,barY;
     float barLength, barWidth = 32;
     char *text = (char *)malloc(sizeof(char) * (10));
+    int blockOffset;
     
     if(!self) return;
 
@@ -370,12 +372,27 @@ void player_ui(Entity *self)
 
     font_draw_text(text,FS_Small, gfc_color(1,1,1,1), vector2d(self->position.x - (self->pixel.x * 0.5 * self->scale.x), self->position.y + (self->pixel.y * 0.5 * self->scale.y) + (barWidth *0.33)),vector2d(1.5,1.5));
 
-    sprintf(text,"%i / %i",self->energy,self->energyMax);
+    if(self->block)
+    {
+        gf2d_draw_rect(damage,blue);
+        sprintf(text,"%i",self->block);
+        if(self->block < 10)
+        blockOffset = 30;
+        else
+        blockOffset = 40;
 
-    energyDisplay = gfc_rect(85,950,100,100);
-    gf2d_draw_rect_filled(energyDisplay,purple);
+        font_draw_text(text,FS_Small, GFC_COLOR_CYAN, vector2d(self->position.x - (self->pixel.x * 0.5 * self->scale.x) - blockOffset, self->position.y + (self->pixel.y * 0.5 * self->scale.y) + (barWidth *0.33)),vector2d(1.5,1.5));
+    }
 
-    font_draw_text(text,FS_Small, gfc_color(1,1,1,1), vector2d(105, 1000) ,vector2d(1.5,1.5));
+    if(state == Combat)
+    {
+        sprintf(text,"%i / %i",self->energy,self->energyMax);
+
+        energyDisplay = gfc_rect(85,950,100,100);
+        gf2d_draw_rect_filled(energyDisplay,purple);
+
+        font_draw_text(text,FS_Small, gfc_color(1,1,1,1), vector2d(105, 1000) ,vector2d(1.5,1.5));
+    }
 }
 
 void player_deck_arrange(Entity *self)
@@ -538,6 +555,7 @@ void player_play_card(Entity *self, Entity *card)
         self->energy = self->energy - 1;
     }
 
+
     if(success)
     {
         //add card to discard
@@ -550,10 +568,14 @@ void player_end_turn(Entity *self)
     if(!self) return;
 
     //slog("happening");
+    enemy_upkeep();
     turn = false;
     player_discard_hand(self);
     player_draw(self,5);
     self->energy = self->energyMax;
+    enemy_act();
+    self->block = 0;
+    enemy_intent();
     //slog("happening 2");
     turn = true;
 }
@@ -591,12 +613,45 @@ void player_combat_start(Entity *self)
 
     player_draw(self, 5);
 
-    for(i = 0; i < gfc_list_get_count(current); i++)
+    /*for(i = 0; i < gfc_list_get_count(current); i++)
     {
         //slog("%s",gfc_list_get_nth(current,i));
-    }
+    }*/
+
+    enemy_intent();
 
     turn = true;
+}
+
+void player_damage(Entity *player, Entity *dealer, int damage, DamageType damageType)
+{
+    if(!player) return;
+
+    if(!dealer) return;
+
+    if(player->block)
+    {
+
+        if(player->block < damage)
+        {
+            damage -= player->block;
+            player->block = 0;
+        }
+
+        if(player->block > damage)
+        {
+            player->block = player->block - damage;
+            damage = 0;
+        }
+    }
+
+    if(player->health < damage)
+    {
+        player->health = 0;
+        return;
+    }
+
+    player->health = player->health - damage;
 }
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop

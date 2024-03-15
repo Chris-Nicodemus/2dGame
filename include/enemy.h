@@ -55,4 +55,9 @@ void enemy_damage(Entity *victim, Entity *self, int damage, DamageType damageTyp
  * @return the number of enemies
 */
 int enemy_get_count();
+
+/**
+ * things that must happen to enemies between turns, like losing block
+*/
+void enemy_upkeep();
 #endif

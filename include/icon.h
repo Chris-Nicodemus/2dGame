@@ -62,4 +62,9 @@ void event_close();
  * @return the text to get 
 */
 char *icon_get_event_text();
+
+/**
+ * @brief the combat is won so clean up all the stuff
+*/
+void icon_combat_win(Entity *player);
 #endif

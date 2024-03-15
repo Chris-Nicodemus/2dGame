@@ -67,7 +67,7 @@ void player_show_deck(Entity *self);
 void player_show_deck_close();
 
 /**
- * @brief do the action based on the card
+ * @brief do the action based on the card (only necessary when card requires a target(s))
  * @param self the player
  * @param card the card to use
 */
@@ -83,6 +83,30 @@ void player_combat_start(Entity *self);
  * @param self the player in question
 */
 void player_end_turn(Entity *self);
+
+/**
+ * @brief discard a card from the player's hand
+ * @param self the player
+ * @param card the card to discard
+*/
+void player_discard(Entity *self, Entity *card);
+
+
+/**
+ * @brief discard the player's hand
+ * @param self the player
+*/
+void player_discard_hand(Entity *self);
+/**
+ * @brief do damage to the player
+ * @param player the player to recieve damage
+ * @param dealer the entity doing damage
+ * @param damage the damage to do
+ * @param damageType the type of damage being done
+*/
+void player_damage(Entity *player, Entity *dealer, int damage, DamageType damageType);
+
+
 /*player custom data notes
 data is turned into a list
 0 - deck            sacred decklist of the player during a run

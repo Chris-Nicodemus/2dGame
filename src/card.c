@@ -2,6 +2,7 @@
 #include "gfc_input.h"
 #include "card.h"
 #include "icon.h"
+#include "player.h"
 
 void card_think(Entity *self);
 void card_update(Entity *self);
@@ -128,7 +129,7 @@ void card_leftClick(Entity *self)
     if(!turn) return;
 
     if(target) return;
-    slog("card was left clicked");
+    //slog("card was left clicked");
 
     if(strcmp(self->data,"strike") == 0)
     {
@@ -138,9 +139,19 @@ void card_leftClick(Entity *self)
 
         target = true;
         targetsNeeded = 1;
+        usedCard = self;
+    }
+    else if(!strcmp("defend",self->data))
+    {
+        if(self->owner->energy < 1) return;
+
+        self->owner->energy = self->owner->energy - 1;
+        self->owner->block = self->owner->block + 5;
+
+        player_discard(self->owner,self);
     }
 
-    usedCard = self;
+    
 }
 
 void card_rightClick(Entity *self)
@@ -172,7 +183,7 @@ char *card_get_random()
 
 char *card_toString(Entity *self)
 {
-    if(!self) return;
+    if(!self) return "fail";
 
     if(!strcmp(self->data,"strike")) return "strike";
 
