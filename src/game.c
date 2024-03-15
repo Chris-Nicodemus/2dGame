@@ -23,7 +23,6 @@ State state = Combat;
 EventType event = None;
 int level = 0;
 Bool turn = true;
-char *action;
 
 //stuff for player to hit enemies
 Bool target;
@@ -32,6 +31,7 @@ Uint8 targetsNeeded;
 
 List *deckDisplay;
 Bool showDeck = false;
+Entity *usedCard;
 
 int main(int argc, char * argv[])
 {
@@ -51,7 +51,6 @@ int main(int argc, char * argv[])
     
     deckDisplay = gfc_list_new();
     targets = gfc_list_new();
-    action = (char *)malloc(sizeof(char) * (20));
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -136,7 +135,7 @@ int main(int argc, char * argv[])
 
             if(mButton == SDL_BUTTON_LEFT && !leftClicked)
             {
-                slog("x: %i, y: %i",mx,my);
+                //slog("x: %i, y: %i",mx,my);
                 leftClicked = true;
             }
             else if(leftClicked && mButton != SDL_BUTTON_LEFT)
@@ -183,22 +182,36 @@ int main(int argc, char * argv[])
                 player_show_deck_close();
             }
 
-            if(state == Combat && target)
+            if(state == Combat)
             {
-                i = targetsNeeded - gfc_list_get_count(targets);
-                switch(i)
+                if(target)
                 {
-                    case 1:
-                    font_draw_text("Select a target!",FS_Medium,gfc_color(1,1,1,1),vector2d(1000,60),vector2d(3,3));
-                    break;
-                    //2 does same as 3
-                    case 2:
-                    case 3:
-                    font_draw_text("Select targets!",FS_Medium,gfc_color(1,1,1,1),vector2d(1050,60),vector2d(3,3));
-                    break;
-                    //do nothing if error
-                    default:
-                    break;
+                    i = targetsNeeded - gfc_list_get_count(targets);
+                    switch(i)
+                    {
+                        case 1:
+                        font_draw_text("Select a target!",FS_Medium,gfc_color(1,1,1,1),vector2d(1000,60),vector2d(3,3));
+                        break;
+                        //2 does same as 3
+                        case 2:
+                        case 3:
+                        font_draw_text("Select targets!",FS_Medium,gfc_color(1,1,1,1),vector2d(1050,60),vector2d(3,3));
+                        break;
+                        //do nothing if error
+                        default:
+                        break;
+                    }
+
+                    if(targetsNeeded == gfc_list_get_count(targets) || gfc_list_get_count(targets) == enemy_get_count())
+                    {
+                        player_play_card(player,usedCard);
+                        targetsNeeded = 0;
+                        target = false;
+                        while(gfc_list_get_count(targets) > 0)
+                        {
+                            gfc_list_delete_last(targets);
+                        }
+                    }
                 }
             }
 

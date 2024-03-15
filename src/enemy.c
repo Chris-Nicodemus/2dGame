@@ -108,7 +108,7 @@ Entity *enemy_new(Vector2D pos, EnemyType type)
 
     //general stuff here
     ent->draw = enemy_draw;
-    //ent->leftClick = enemy_leftClick;
+    ent->leftClick = enemy_leftClick;
     ent->free = enemy_free;
     ent->drawOffsetX = -ent->pixel.x * ent->scale.x * 0.5;
     ent->drawOffsetY = -ent->pixel.y * ent->scale.y * 0.5;
@@ -158,6 +158,26 @@ void enemy_draw(Entity *self)
     font_draw_text(text,FS_Small, gfc_color(1,1,1,1), vector2d(self->position.x - (self->pixel.x * 0.5 * self->scale.x), self->position.y + (self->pixel.y * 0.5 * self->scale.y) + (barWidth *0.33)),vector2d(1.5,1.5));
 }
 
+void enemy_leftClick(Entity *self)
+{
+    if(!self) return;
+
+    if(!target)
+    {   
+        slog("target false");
+        return;
+    }
+
+    //return if enough targets
+    slog("happening");
+    if(gfc_list_get_count(targets) >= targetsNeeded) return;
+
+    //return if already in list
+    if(gfc_list_get_item_index(targets, self) != -1) return;
+
+    gfc_list_append(targets, self);
+}
+
 void bug_think(Entity *self)
 {
     if(!self) return;
@@ -171,3 +191,42 @@ void bug_update(Entity *self)
     if(!self) return;
 }
 
+int enemy_get_count()
+{
+    return gfc_list_get_count(enemy_manager.enemy_list);
+}
+
+void enemy_damage(Entity *victim, Entity *self, int damage, DamageType dammageType)
+{
+    int i;
+    if(!victim) return;
+
+    if(!self) return;
+
+    if(victim->block)
+    {
+
+        if(victim->block < damage)
+        {
+            damage -= victim->block;
+            victim->block = 0;
+        }
+
+        if(victim->block > damage)
+        {
+            victim->block = victim->block - damage;
+            damage = 0;
+        }
+    }
+
+    if(victim->health < damage)
+    {
+        victim->health = 0;
+        i = gfc_list_get_item_index(enemy_manager.enemy_list,victim);
+        gfc_list_delete_nth(enemy_manager.enemy_list, i);
+        entity_free(victim);
+        return;
+    }
+
+    victim->health = victim->health - damage;
+}

@@ -8,6 +8,7 @@
 #include "font.h"
 #include "player.h"
 #include "card.h"
+#include "enemy.h"
 
 void player_think(Entity *self);
 void player_update(Entity *self);
@@ -18,6 +19,7 @@ void player_new_deck(Entity *self);
 void player_ui(Entity *self);
 
 extern List *deckDisplay;
+extern List *targets;
 
 Entity *player_new(Vector2D pos)
 {
@@ -452,6 +454,44 @@ void player_show_deck_close()
         i = gfc_list_get_count(deckDisplay) - 1;
         entity_free(gfc_list_get_nth(deckDisplay,i));
         gfc_list_delete_last(deckDisplay);
+    }
+}
+
+void player_play_card(Entity *self, Entity *card)
+{
+    Entity *target;
+    List *discard;
+    List *hand;
+    Bool success;
+    if(!self) return;
+
+    if(!card) return;
+
+    discard = gfc_list_get_nth(self->data,2);
+    hand = gfc_list_get_nth(self->data,3);
+    if(!strcmp(card->data,"strike"))
+    {
+        target = gfc_list_get_nth(targets,0);
+        if(!target)
+        {
+            slog("invalid target");
+            return;
+        }
+        success = true;
+        enemy_damage(target,self,6,0);
+        self->energy = self->energy - 1;
+    }
+
+    if(success)
+    {
+        //add card to discard
+        gfc_list_append(discard,card->data);
+
+        //delete card
+        gfc_list_delete_nth(hand, gfc_list_get_item_index(hand,card));
+        entity_free(card);
+
+        player_arrange_hand(self);
     }
 }
 //spritesheet goes from 0 to 147

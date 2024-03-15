@@ -16,6 +16,7 @@ extern Bool turn;
 extern Bool target;
 extern List *targets;
 extern int targetsNeeded;
+extern Entity *usedCard;
 
 Entity *card_new(char *name, Entity *player)
 {
@@ -126,18 +127,20 @@ void card_leftClick(Entity *self)
 
     if(!turn) return;
 
+    if(target) return;
     slog("card was left clicked");
 
     if(strcmp(self->data,"strike") == 0)
     {
-        slog("getting here");
+        //slog("getting here");
         if(self->owner->energy < 1)
         return;
 
-        self->owner->energy = self->owner->energy - 1;
         target = true;
         targetsNeeded = 1;
     }
+
+    usedCard = self;
 }
 
 void card_rightClick(Entity *self)

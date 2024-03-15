@@ -43,6 +43,16 @@ void enemy_act();
 
 /**
  * @brief deal damage to an enemy
+ * @param target the target to damage
+ * @param self the entity doing damage
+ * @param damage the amount of damage to do
+ * @param damageType the type of damage applied
 */
-void enemy_damage(int damage, DamageType damageType);
+void enemy_damage(Entity *victim, Entity *self, int damage, DamageType damageType);
+
+/**
+ * @brief get number of enemies alive
+ * @return the number of enemies
+*/
+int enemy_get_count();
 #endif

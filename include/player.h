@@ -62,10 +62,16 @@ void player_load_deck(Entity *self);
 void player_show_deck(Entity *self);
 
 /**
- * @delete the current list of entities showing the deck
+ * @brief delete the current list of entities showing the deck
 */
 void player_show_deck_close();
 
+/**
+ * @brief do the action based on the card
+ * @param self the player
+ * @param card the card to use
+*/
+void player_play_card(Entity *self, Entity *card);
 /*player custom data notes
 data is turned into a list
 0 - deck            sacred decklist of the player during a run
