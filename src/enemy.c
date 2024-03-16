@@ -277,6 +277,24 @@ void enemy_damage(Entity *victim, Entity *self, int damage, DamageType dammageTy
     victim->health = victim->health - damage;
 }
 
+void enemy_damage_all(Entity *dealer, int damage, DamageType damageType)
+{
+    if(!dealer) return;
+
+    int i;
+    Entity *enemy;
+
+    for(i  = gfc_list_get_count(enemy_manager.enemy_list) - 1; i > -1; i--)
+    {
+        enemy = gfc_list_get_nth(enemy_manager.enemy_list,i);
+        if(!enemy) continue;
+
+        enemy_damage(enemy,dealer,damage,damageType);
+    }
+
+
+}
+
 void decide_intent(Entity *self)
 {
     if(!self) return;
@@ -292,11 +310,11 @@ void decide_intent(Entity *self)
             {
                 case Attack:
                 self->action = i;
-                self->actionStrength = (int) (gfc_crandom() * 6) + 4;
+                self->actionStrength = (int) (gfc_random() * 6 + 4);
                 return;
                 case Block:
                 self->action = i;
-                self->actionStrength = (int) (gfc_crandom() * 6) + 4;
+                self->actionStrength = (int) (gfc_random() * 6 + 4);
                 return;
                 default:
                 slog("Action failure");

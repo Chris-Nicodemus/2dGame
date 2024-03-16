@@ -51,6 +51,14 @@ void enemy_act();
 void enemy_damage(Entity *victim, Entity *self, int damage, DamageType damageType);
 
 /**
+ * @brief deal damage to all living enemies
+ * @param dealer the player doing damage
+ * @param damage the damage to be dealt
+ * @param damageType the type of damage
+*/
+void enemy_damage_all(Entity *dealer, int damage, DamageType damageType);
+
+/**
  * @brief get number of enemies alive
  * @return the number of enemies
 */

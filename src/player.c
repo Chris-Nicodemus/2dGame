@@ -185,6 +185,14 @@ void player_new_deck(Entity *self)
         gfc_list_append(deck,"defend");
     }
 
+    gfc_list_append(deck,"skies");
+    gfc_list_append(deck,"defensiveAction");
+    gfc_list_append(deck,"hunker");
+    gfc_list_append(deck,"slipstream");
+    gfc_list_append(deck,"airstrike");
+    gfc_list_append(deck,"carpet");
+    gfc_list_append(deck,"unleash");
+
     gfc_list_concat(gfc_list_get_nth(self->data,1),deck);
 }
 
@@ -553,6 +561,39 @@ void player_play_card(Entity *self, Entity *card)
         success = true;
         enemy_damage(target,self,6,0);
         self->energy = self->energy - 1;
+    }
+    else if(!strcmp(card->data,"skies"))
+    {
+        target = gfc_list_get_nth(targets,0);
+        if(!target)
+        {
+            slog("invalid target");
+            return;
+        }
+        success = true;
+        enemy_damage(target,self,3,0);
+        self->airborne = true;
+        self->energy = self->energy - 1;
+    }
+    else if(!strcmp(card->data,"airstrike"))
+    {
+        target = gfc_list_get_nth(targets,0);
+        if(!target)
+        {
+            slog("invalid target");
+            return;
+        }
+        success = true;
+        
+        if(self->airborne)
+        {
+            enemy_damage(target,self,14,0);
+        }
+        else
+        {
+            enemy_damage(target,self,8,0);
+        }
+        self->energy = self->energy - 2;
     }
 
 

@@ -433,6 +433,7 @@ void icon_combat_win(Entity *player)
 {
     if(!player) return;
 
+    player->airborne = false;
     //put the hand back in the deck
     player_discard_hand(player);
     player_shuffle(player);
