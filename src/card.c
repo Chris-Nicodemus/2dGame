@@ -89,6 +89,10 @@ void find_sprite(Entity *self)
     {
         self->sprite  = gf2d_sprite_load_image("images/cards/unleash.png");
     }
+    else if(!strcmp(self->data, "skyfall"))
+    {
+        self->sprite  = gf2d_sprite_load_image("images/cards/skyfall.png");
+    }
 }
 
 void card_add_to_deck(Entity *self)
@@ -279,6 +283,14 @@ void card_leftClick(Entity *self)
         player_arrange_hand(self->owner);
         entity_free(self);
     }
+    else if(!strcmp("skyfall",self->data))
+    {
+        if(self->owner->energy < 3) return;
+
+        target = true;
+        targetsNeeded = 1;
+        usedCard = self;
+    }
 }
 
 void card_rightClick(Entity *self)
@@ -291,7 +303,7 @@ void card_rightClick(Entity *self)
 char *card_get_random()
 {
     int i;
-    i = (int) (gfc_random() * 9);
+    i = (int) (gfc_random() * 10);
 
     switch(i)
     {
@@ -321,6 +333,9 @@ char *card_get_random()
 
         case 8:
         return "unleash";
+
+        case 9:
+        return "skyfall";
 
         default:
         return "fail";
@@ -352,6 +367,8 @@ char *card_toString(Entity *self)
     if(!strcmp(self->data, "carpetUp")) return "carpet";
 
     if(!strcmp(self->data, "unleash")) return "unleash";
+
+    if(!strcmp(self->data, "skyfall")) return "skyfall";
 
     return "fail";
 }

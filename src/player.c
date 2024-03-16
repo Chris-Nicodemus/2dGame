@@ -192,6 +192,7 @@ void player_new_deck(Entity *self)
     gfc_list_append(deck,"airstrike");
     gfc_list_append(deck,"carpet");
     gfc_list_append(deck,"unleash");
+    gfc_list_append(deck,"skyfall");
 
     gfc_list_concat(gfc_list_get_nth(self->data,1),deck);
 }
@@ -595,6 +596,29 @@ void player_play_card(Entity *self, Entity *card)
         }
         self->energy = self->energy - 2;
     }
+    else if(!strcmp(card->data,"skyfall"))
+    {
+        target = gfc_list_get_nth(targets,0);
+        if(!target)
+        {
+            slog("invalid target");
+            return;
+        }
+        success = true;
+        enemy_damage(target,self,20,0);
+        self->energy = self->energy - 3;
+
+        if(self->health - 5 <= 0)
+        self->health = 0;
+        else
+        self->health = self->health - 5;
+
+        if(self->airborne)
+        {
+            self->airborne = false;
+            self->energy = self->energy + 2;
+        }
+    }
 
 
     if(success)
@@ -682,7 +706,7 @@ void player_damage(Entity *player, Entity *dealer, int damage, DamageType damage
         if(player->block > damage)
         {
             player->block = player->block - damage;
-            damage = 0;
+            return;
         }
     }
 
@@ -692,7 +716,18 @@ void player_damage(Entity *player, Entity *dealer, int damage, DamageType damage
         return;
     }
 
+    //airborne reduces damage, but you also fall out of the sky
+    if(player->airborne)
+    {
+        player->airborne = false;
+        if(damage <= 3)
+        return;
+        else
+        damage -= 3;
+    }
+
     player->health = player->health - damage;
+    
 }
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop
