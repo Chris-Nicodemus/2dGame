@@ -32,4 +32,9 @@ void world_free(World *world);
  * @param world the world to draw
 */
 void world_draw(World *world);
+
+/**
+ * @brief open the mainMenu. May need to be called from several other files
+*/
+void world_open_main_menu();
 #endif

@@ -47,3 +47,66 @@ Some cards allow you to gain "Block," which will reduce incoming damage by the a
 
 Some cards mention the keyword "Airborne." You are a transforming mech, which has the ability of flight! Many cards are improved while you are airborne.
 Airborne also reduces the next source of damage you recieve by 3, but you also fall to the ground and lose your airborne bonuses.
+
+At the end of your turn, you discard your hand
+
+# Credits
+
+Slay the Spire custom card maker
+https://kkouch.itch.io/slay-the-spire-custom-card-maker
+
+Mech-punch by arttukorppu
+https://www.deviantart.com/arttukorppu/art/Mech-punch-851701893
+Bubble by LeonovichDmitriy on DeviantArt
+https://www.deviantart.com/leonovichdmitriy/art/Bubble-559087701
+
+Icon Images from CraftPix
+https://craftpix.net/freebies/free-40-loot-icons-pixel-art/?num=1&count=579&sq=icon&pos=6
+https://craftpix.net/freebies/free-pixel-art-icons-for-mine-location/?num=4&count=579&sq=icon&pos=7
+
+Stone wall texture by bcmartini77
+https://www.deviantart.com/bcmartini77/art/Seamless-Stone-Wall-Texture-524352311
+
+Free City Background Pixel Art from CraftPix
+https://craftpix.net/freebies/free-city-backgrounds-pixel-art/
+
+Font
+https://www.1001freefonts.com/arkitech.font
+
+<a href="https://www.freepik.com/free-photo/wooden-floor-background_4100933.htm#query=parchment&position=3&from_view=keyword&track=sph&uuid=f6cec357-7b95-458c-b2fc-bf33e41ec647">Image by rawpixel.com</a> on Freepik
+
+https://www.cleanpng.com/png-question-mark-computer-icons-portable-network-grap-7031667/
+
+Button from caftpix
+https://craftpix.net/freebies/free-buttons-2d-game-objects/?num=1&count=58&sq=end%20turn%20button&pos=13
+
+
+Wingsuit by novaillusion
+https://www.deviantart.com/novaillusion/art/wingsuit-622539459
+
+HAWK Flight Suit by Richie mason - zbrushtuts
+https://ru.pinterest.com/pin/298715387763940674/?amp_client_id=CLIENT_ID%28_%29&mweb_unauth_id=%7B%7Bdefault.session%7D%7D&simplified=true
+Airdrop! By Chuk Wojtkiewicz
+https://www.artstation.com/artwork/air-drop-6ccdc397-404f-41ea-b4fc-b66203d67f44
+
+Airstrike! By Luca Bottazzi
+https://www.artstation.com/artwork/e0lAEY
+
+https://wallhaven.cc/w/j5vq3m
+
+Giant Mech by Met4lhe4d
+https://www.deviantart.com/met4lhe4d/art/Giant-Mech-963830952
+
+Portal from Legend of Korra
+https://tvtropes.org/pmwiki/pmwiki.php/Main/PillarOfLight
+
+Music by Alex Cristoforetti from Pixabay
+Motivational Electronic | Distant
+https://pixabay.com/music/beats-motivational-electronic-distant-132919/
+Used as game opening
+
+Music by Evgeny Bardyuzha from Pixabay
+Password Infinity
+https://pixabay.com/music/beats-password-infinity-123276/
+Used as general theme
+

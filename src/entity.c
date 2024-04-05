@@ -233,7 +233,7 @@ void entity_update(Entity *self)
 
 void entity_system_update()
 {
-int i;
+    int i;
 
     for(i = 0; i < entity_manager.entity_max; i++)
     {

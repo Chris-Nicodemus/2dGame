@@ -1,7 +1,9 @@
 #include "simple_logger.h"
+#include "gfc_audio.h"
 #include "world.h"
 #include "entity.h"
 #include "icon.h"
+#include "font.h"
 
 extern State state;
 static Vector2D choice1;
@@ -59,6 +61,7 @@ World *world_new()
     gfc_list_append(world->bgs,gf2d_sprite_load_image("images/backgrounds/cityNight.png"));
     gfc_list_append(world->bgs,gf2d_sprite_load_image("images/backgrounds/stoneWall.jpg"));
     gfc_list_append(world->bgs,gf2d_sprite_load_image("images/backgrounds/MapFullCentered.jpg"));
+    gfc_list_append(world->bgs,gf2d_sprite_load_image("images/backgrounds/cityOpening.png"));
     return world;
 }
 
@@ -117,6 +120,17 @@ void world_get_state(World *world)
                 world->scale = vector2d(1.111111111,1);   
             }
             return;
+        case MainMenu:
+            if(strcmp(world->name, "images/backgrounds/cityOpening.png"))
+            {
+                world->name = "images/backgrounds/cityOpening.png";
+                world->background = gfc_list_get_nth(world->bgs, 4);
+                world->scale = vector2d(1.04166667,1.111111111);   
+            }
+            return;
+        default:
+            slog("state not implemented");
+            return;
     }
 }
 
@@ -130,4 +144,22 @@ void world_draw(World *world)
     {
         gf2d_sprite_draw(world->background,vector2d(0,0),&world->scale,NULL,NULL,NULL,NULL,0);
     }
+}
+
+void world_open_main_menu()
+{
+    state = MainMenu;
+
+    Mix_Music *opening = Mix_LoadMUS("audio/opening.mp3");
+    if(opening)
+    {
+        Mix_PlayMusic(opening, -1);
+        Mix_VolumeMusic(32);
+        slog("music volume: %i",Mix_VolumeMusic(-1));
+    }
+    else
+    {
+        slog("music fail");
+    }
+    Text *play = text_new("Play", FS_Large, vector2d(1975,850),vector2d(5,5), GFC_COLOR_WHITE, 0, TT_MainMenu_Button);
 }

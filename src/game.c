@@ -4,10 +4,13 @@
 #include <SDL.h>
 #include "simple_logger.h"
 #include "simple_json.h"
+
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
 #include "gf2d_draw.h"
 #include "gfc_input.h"
+#include "gfc_audio.h"
+
 #include "font.h"
 #include "world.h"
 #include "entity.h"
@@ -23,7 +26,7 @@ Bool rightClicked;
 Uint32 rightClickCooldown;
 
 State oldState;
-State state = Choice;
+State state;
 EventType event = None;
 int level = 0;
 Bool turn = false;
@@ -71,12 +74,31 @@ int main(int argc, char * argv[])
         vector4d(0,0,0,255),
         0);
     gf2d_graphics_set_frame_delay(24);
-    font_init();
+    font_init(512);
     gf2d_sprite_init(1024);
     entity_system_init(1024);
     icon_init();
     enemy_system_init(24);
+
+    gfc_audio_init(100,64,4,10,1,0);
     
+    //slog("x: %f, y: %f", play->textSize.x, play->textSize.y);
+    
+    /*Mix_Music *opening = Mix_LoadMUS("audio/opening.mp3");
+    if(opening)
+    {
+        Mix_PlayMusic(opening, -1);
+        Mix_VolumeMusic(32);
+        slog("music volume: %i",Mix_VolumeMusic(-1));
+    }
+    else
+    {
+        slog("music fail");
+    }*/
+
+    world_open_main_menu();
+    
+
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
@@ -140,6 +162,9 @@ int main(int argc, char * argv[])
 
             //gf2d_draw_rect_filled(gfc_rect(player->position.x,player->position.y,5,5),gfc_color(1,0,0,1));
             
+            text_update_all();
+
+            text_draw_all();
 
             if(mButton == SDL_BUTTON_LEFT && !leftClicked)
             {
@@ -229,7 +254,7 @@ int main(int argc, char * argv[])
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
-        if(gfc_input_command_pressed("map"))
+        if(gfc_input_command_pressed("map") && state != MainMenu)
         {
             if(state == Map)
             {
@@ -242,7 +267,7 @@ int main(int argc, char * argv[])
             }
         }
 
-        if(gfc_input_command_pressed("deck"))
+        if(gfc_input_command_pressed("deck") && state != MainMenu)
         {
             if(!showDeck)
             showDeck = true;

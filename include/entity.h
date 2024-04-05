@@ -11,7 +11,8 @@ typedef enum
     Combat,
     Event,
     Choice,
-    Map
+    Map,
+    MainMenu
 } State;
 
 typedef enum
