@@ -1,5 +1,6 @@
 #include "simple_logger.h"
 #include "gfc_list.h"
+#include "gfc_audio.h"
 #include "gf2d_graphics.h"
 #include "gf2d_draw.h"
 #include "font.h"
@@ -532,6 +533,9 @@ void text_play_left_click(Text *self)
     state = Choice;
 
     text_clear_all(NULL);
+
+    Mix_Music *password = Mix_LoadMUS("audio/password-infinity.mp3");
+    Mix_FadeInMusic(password,-1,4000);
     return;
 }
 

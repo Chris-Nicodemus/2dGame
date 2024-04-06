@@ -13,11 +13,13 @@
 
 #include "font.h"
 #include "world.h"
+#include "custom_deck.h"
 #include "entity.h"
 #include "player.h"
 #include "card.h"
 #include "icon.h"
 #include "enemy.h"
+
 
 Bool leftClicked;
 Uint32 leftClickCooldown;
@@ -47,6 +49,7 @@ int main(int argc, char * argv[])
     int done = 0;
     int i; //general use
     const Uint8 * keys;
+    Bool custom;
     //Sprite *sprite;
     World *world;
     
@@ -65,6 +68,19 @@ int main(int argc, char * argv[])
     gfc_input_init("gfc/sample_config/input.cfg");
     
     slog("---==== BEGIN ====---");
+
+    for (i = 1; i < argc; i++)
+    {
+        if (strcmp(argv[i],"--custom") == 0)
+        {
+            slog("launching deck editor custom map");
+            custom = true;
+        }
+    }
+
+    if(custom)
+    custom_deck_write();
+
     gf2d_graphics_initialize(
         "gf2d",
         2400,
@@ -101,16 +117,13 @@ int main(int argc, char * argv[])
 
     SDL_ShowCursor(SDL_DISABLE);
     
-    /*demo setup*/
-    //sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
+    
     world = world_new();
     icon_get_world(world);
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     /*main game loop*/
 
     Entity *player = player_new(vector2d(690,740));
-    //Entity *bug = enemy_new(vector2d(1190,540),Bug);
-    //Entity *button = icon_new(vector2d(1950,920),EndTurn);
     
     icon_get_player(player);
     FILE *deck = fopen("config/deck.json","r");
@@ -125,10 +138,6 @@ int main(int argc, char * argv[])
         slog("loading deck");
     }
     fclose(deck);
-
-    //player_shuffle(player);
-    //player_draw(player,10);
-    //player_combat_start(player);
     
 
     while(!done)
