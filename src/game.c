@@ -41,7 +41,7 @@ Uint8 targetsNeeded;
 List *deckDisplay;
 Bool showDeck = false;
 Entity *usedCard;
-
+World *world;
 
 int main(int argc, char * argv[])
 {
@@ -51,7 +51,6 @@ int main(int argc, char * argv[])
     const Uint8 * keys;
     Bool custom;
     //Sprite *sprite;
-    World *world;
     
     int mx,my;
     Uint32 mButton;

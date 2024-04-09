@@ -106,6 +106,11 @@ void player_discard_hand(Entity *self);
 */
 void player_damage(Entity *player, Entity *dealer, int damage, DamageType damageType);
 
+/**
+ * @brief reset the player's health and deck when they lose and then open the main menu
+ * @param self the player to reset
+*/
+void player_reset(Entity *self);
 
 /*player custom data notes
 data is turned into a list

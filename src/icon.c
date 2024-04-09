@@ -360,7 +360,7 @@ void icon_leftClick(Entity *self)
     {
         //skip anything not clickable
         case ChoiceBattle:
-        slog("Battle Click");
+        //slog("Battle Click");
         state = Combat;
         gfc_list_append(tempIcons,icon_new(vector2d(1950,920),EndTurn));
         ent = enemy_new(vector2d(1600,740),Bug);
@@ -368,7 +368,7 @@ void icon_leftClick(Entity *self)
         return;
 
         case ChoiceExplore:
-        slog("Explore Click");
+        //slog("Explore Click");
         event_start(Explore);
         return;
 

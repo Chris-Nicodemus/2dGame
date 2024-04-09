@@ -43,12 +43,12 @@ World *world_new()
     world->name = "images/backgrounds/cityDay.png";
     world->scale = vector2d(1.04166667,1.111111111);
 
-    //choice icons
+    //choice icons 0-2
     gfc_list_append(world->icons, icon_new(choice1,ChoiceBattle));
     gfc_list_append(world->icons, icon_new(choice2,ChoiceExplore));
     gfc_list_append(world->icons, icon_new(choice3,ChoiceShrine));
 
-    //map icons
+    //map icons 3-7
     gfc_list_append(world->icons, icon_new(map1, Question));
     gfc_list_append(world->icons, icon_new(map2, Question));
     gfc_list_append(world->icons, icon_new(map3, Question));

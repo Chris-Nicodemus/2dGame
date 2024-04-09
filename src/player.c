@@ -6,6 +6,8 @@
 #include "gfc_input.h"
 #include "gf2d_draw.h"
 #include "font.h"
+#include "world.h"
+#include "icon.h"
 #include "player.h"
 #include "card.h"
 #include "enemy.h"
@@ -18,10 +20,14 @@ void player_rightClick(Entity *self);
 void player_new_deck(Entity *self);
 void player_ui(Entity *self);
 
+void player_reset(Entity *self);
+
 extern State state;
 extern List *deckDisplay;
 extern List *targets;
 extern Bool turn;
+extern World *world;
+extern int level;
 
 Entity *player_new(Vector2D pos)
 {
@@ -52,7 +58,7 @@ Entity *player_new(Vector2D pos)
     ent->rightClick = player_rightClick;
     ent->draw = player_ui;
     ent->healthMax = 89;
-    ent->health = 45;//ent->healthMax; 
+    ent->health = 5;//ent->healthMax; 
     ent->energyMax = 3;
     ent->energy = ent->energyMax;
     ent->type = Player;
@@ -96,6 +102,11 @@ void player_think(Entity *self)
     if(self->mouse)
     {
         //things to do when being moused on
+    }
+
+    if(self->health <= 0)
+    {
+        player_reset(self);
     }
 }
 
@@ -179,6 +190,12 @@ void player_new_deck(Entity *self)
 
     List *deck = gfc_list_get_nth(self->data,0);
 
+    //empty old deck if something is there
+    while(gfc_list_get_count(gfc_list_get_nth(self->data,1)) > 0)
+    {
+        gfc_list_delete_last(gfc_list_get_nth(self->data,1));
+    }
+
     for(i = 0; i < 5; i++)
     {
         gfc_list_append(deck,"strike");
@@ -251,7 +268,7 @@ void player_draw(Entity *self, Uint8 num)
 
             if(gfc_list_get_count(currentDeck) == 0)
             {
-                slog("deck empty!");
+                //slog("deck empty!");
                 break;
             }
         }    
@@ -728,6 +745,49 @@ void player_damage(Entity *player, Entity *dealer, int damage, DamageType damage
 
     player->health = player->health - damage;
     
+}
+
+void player_reset(Entity *self)
+{
+    List *hand;
+    List *discard;
+    int i;
+    Entity *card;
+    if(!self) return;
+
+    hand = gfc_list_get_nth(self->data,3);
+    discard = gfc_list_get_nth(self->data,2);
+
+    for(i = gfc_list_get_count(hand) - 1; i > -1; i--)
+    {
+        card = gfc_list_get_nth(hand,i);
+        if(card)
+        entity_free(card);
+
+        gfc_list_delete_last(hand);
+    }
+
+    //slog("hand deletion done");
+
+    while(gfc_list_get_count(discard) > 0)
+    {
+        gfc_list_delete_last(discard);
+    }
+
+    //slog("discard deletion done");
+
+    player_new_deck(self);
+
+    self->health = self->healthMax;
+    self->airborne = false;
+
+    level = 0;
+    world_open_main_menu();
+
+    for(i = 3; i < 8; i++)
+    {
+        icon_set_sprite(gfc_list_get_nth(world->icons,i), Question);
+    }
 }
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop

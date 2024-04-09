@@ -110,6 +110,7 @@ Entity *enemy_new(Vector2D pos, EnemyType type)
         ent->update = bug_update;
         ent->healthMax = (int) (gfc_random() * 13) + 25;
         ent->health = ent->healthMax;
+        ent->gold = (int) (gfc_random() * 16) + 5;
         break;
     
     default:
@@ -136,7 +137,7 @@ void enemy_free(Entity *self)
     if(!self) return;
 
     //delete index on the enemy array
-    gfc_list_delete_data(enemy_manager.enemy_list, self);
+    //gfc_list_delete_data(enemy_manager.enemy_list, self);
 }
 
 void enemy_draw(Entity *self)
@@ -265,6 +266,11 @@ void enemy_damage(Entity *victim, Entity *self, int damage, DamageType dammageTy
     if(victim->health <= damage)
     {
         victim->health = 0;
+        entity_get_player()->gold = entity_get_player()->gold + victim->gold;
+        char *text = (char *)malloc(20);
+        sprintf(text,"You got %i gold!", victim->gold);
+        //slog(text);
+        text_new(text, FS_Large, vector2d(1020,420), vector2d(5,5), GFC_COLOR_WHITE, 2000, TT_Reward);
         i = gfc_list_get_item_index(enemy_manager.enemy_list,victim);
         gfc_list_delete_nth(enemy_manager.enemy_list, i);
         entity_free(victim);

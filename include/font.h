@@ -19,7 +19,8 @@ typedef enum
 typedef enum
 {
     TT_MainMenu,
-    TT_MainMenu_Button
+    TT_MainMenu_Button,
+    TT_Reward
 } TextType;
 
 typedef struct Text_S {

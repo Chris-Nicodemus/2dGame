@@ -387,7 +387,7 @@ Text *text_new(char *text, FontStyles style, Vector2D position, Vector2D scale, 
         newText->leftClick = text_play_left_click;
         break;
         default:
-        slog("type fail");
+        slog("default type");
     }
 
     text_get_size(newText);

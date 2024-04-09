@@ -74,6 +74,7 @@ typedef struct Entity_S
     int energy;
     int energyMax;
     int overload;
+    int gold;           //for players and enemies
     Bool airborne;      //state for player
     
     void (*think) (struct Entity_S *self);
