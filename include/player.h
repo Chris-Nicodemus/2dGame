@@ -112,6 +112,18 @@ void player_damage(Entity *player, Entity *dealer, int damage, DamageType damage
 */
 void player_reset(Entity *self);
 
+/**
+ * @brief start the combat. Also checks to see if currentdeck is the same as the sacred deck at the start of the combat. If not, then remake the curent deck
+ * @param player1 the first player
+ * @param player2 the second player
+*/
+void player_multi_combat_start(Entity *player1, Entity *player2);
+
+/**
+ * @brief ends the current player's turn in a commbat
+*/
+void player_multi_end_turn();
+
 /*player custom data notes
 data is turned into a list
 0 - deck            sacred decklist of the player during a run

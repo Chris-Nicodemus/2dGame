@@ -151,6 +151,13 @@ Bool entity_active(Entity *self)
                 return true;
             else
                 return false;
+        case Multiplayer:
+            if(type == Player || type == Player2 || type == CombatButton)
+                return true;
+            else
+                return false;
+        default:
+            return false;
     }
     return false;
 }
@@ -313,7 +320,7 @@ Entity *entity_get_player()
         if(!entity_manager.entity_list[i]._inuse)
         continue;
 
-        if(entity_manager.entity_list[i].energyMax > 0)
+        if(entity_manager.entity_list[i].type == Player)
         {
             return &entity_manager.entity_list[i];
         }
@@ -321,3 +328,22 @@ Entity *entity_get_player()
 
     return NULL;
 }
+
+Entity *entity_get_player2()
+{
+    int i;
+
+    for(i = 0; entity_manager.entity_max; i++)
+    {
+        if(!entity_manager.entity_list[i]._inuse)
+        continue;
+
+        if(entity_manager.entity_list[i].type  == Player2)
+        {
+            return &entity_manager.entity_list[i];
+        }
+    }
+
+    return NULL;
+}
+

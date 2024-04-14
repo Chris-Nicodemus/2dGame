@@ -5,6 +5,8 @@
 #include "gf2d_draw.h"
 #include "font.h"
 #include "entity.h"
+#include "icon.h"
+#include "player.h"
 
 
 typedef struct
@@ -36,11 +38,13 @@ static TextManager text_manager = {0};
 extern Bool leftClicked;
 extern Bool rightClicked;
 extern State state;
+extern List *tempIcons;
 
 //do these next
 void text_main_menu_button_update(Text *self);
 void text_main_menu_button_moused(Text *self);
 void text_play_left_click(Text *self);
+void text_pvp_left_click(Text *self);
 
 void font_close()
 {
@@ -385,6 +389,8 @@ Text *text_new(char *text, FontStyles style, Vector2D position, Vector2D scale, 
         newText->update = text_main_menu_button_update;
         if(!strcmp(newText->text, "Play"))
         newText->leftClick = text_play_left_click;
+        if(!strcmp(newText->text, "PvP"))
+        newText->leftClick = text_pvp_left_click;
         break;
         default:
         slog("default type");
@@ -536,6 +542,28 @@ void text_play_left_click(Text *self)
 
     Mix_Music *password = Mix_LoadMUS("audio/password-infinity.mp3");
     Mix_FadeInMusic(password,-1,4000);
+    return;
+}
+
+void text_pvp_left_click(Text *self)
+{
+    Entity *player2;
+    if(!self) return;
+
+    state = Multiplayer;
+
+    player2 = player_new(vector2d(1590,740));
+    player2->type = Player2;
+    player2->flip = vector2d(0,0);
+
+    text_clear_all(NULL);
+
+    Mix_Music *password = Mix_LoadMUS("audio/password-infinity.mp3");
+    Mix_FadeInMusic(password,-1,4000);
+
+    player_multi_combat_start(entity_get_player(),player2);
+    gfc_list_append(tempIcons,icon_new(vector2d(1950,920),EndTurn));
+    
     return;
 }
 

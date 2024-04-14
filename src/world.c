@@ -128,6 +128,14 @@ void world_get_state(World *world)
                 world->scale = vector2d(1.04166667,1.111111111);   
             }
             return;
+        case Multiplayer:
+            if(strcmp(world->name,"images/backgrounds/cityNight.png"))
+            {
+                world->name = "images/backgrounds/cityNight.png";
+                world->background = gfc_list_get_nth(world->bgs, 1);
+                world->scale = vector2d(1.04166667,1.111111111);   
+            }
+            return;
         default:
             slog("state not implemented");
             return;
@@ -155,11 +163,15 @@ void world_open_main_menu()
     {
         Mix_PlayMusic(opening, -1);
         Mix_VolumeMusic(32);
-        slog("music volume: %i",Mix_VolumeMusic(-1));
+        //slog("music volume: %i",Mix_VolumeMusic(-1));
     }
     else
     {
         slog("music fail");
     }
-    Text *play = text_new("Play", FS_Large, vector2d(1975,850),vector2d(5,5), GFC_COLOR_WHITE, 0, TT_MainMenu_Button);
+    Text *play = text_new("Play", FS_Large, vector2d(1875,750),vector2d(5,5), GFC_COLOR_WHITE, 0, TT_MainMenu_Button);
+
+    Text *pvp = text_new("PvP", FS_Large, vector2d(1875,850),vector2d(5,5), GFC_COLOR_WHITE, 0, TT_MainMenu_Button);
+
+    Text *challenge = text_new("Challenge", FS_Large, vector2d(1875,950),vector2d(3,3), GFC_COLOR_WHITE, 0, TT_MainMenu_Button);
 }

@@ -58,7 +58,7 @@ Entity *player_new(Vector2D pos)
     ent->rightClick = player_rightClick;
     ent->draw = player_ui;
     ent->healthMax = 89;
-    ent->health = 5;//ent->healthMax; 
+    ent->health = ent->healthMax; 
     ent->energyMax = 3;
     ent->energy = ent->energyMax;
     ent->type = Player;
@@ -375,6 +375,7 @@ void player_ui(Entity *self)
     Color red = gfc_color8(100,0,0,255);
     Color green = gfc_color8(50,208,0,255);
     Color blue = gfc_color8(84, 195, 212, 255);
+    Color pink = gfc_color8(242, 0, 121, 255);
     float barX,barY;
     float barLength, barWidth = 32;
     char *text = (char *)malloc(sizeof(char) * (10));
@@ -410,12 +411,18 @@ void player_ui(Entity *self)
         font_draw_text(text,FS_Small, GFC_COLOR_CYAN, vector2d(self->position.x - (self->pixel.x * 0.5 * self->scale.x) - blockOffset, self->position.y + (self->pixel.y * 0.5 * self->scale.y) + (barWidth *0.33)),vector2d(1.5,1.5));
     }
 
-    if(state == Combat)
+    if(state == Combat 
+    || (state == Multiplayer /*Below are the conditions to determine who's energy is to show*/
+    && ((self->type == Player && turn) || (self->type == Player2 && !turn))))
     {
         sprintf(text,"%i / %i",self->energy,self->energyMax);
 
         energyDisplay = gfc_rect(85,950,100,100);
+
+        if(self->type == Player)
         gf2d_draw_rect_filled(energyDisplay,purple);
+        else
+        gf2d_draw_rect_filled(energyDisplay,pink);
 
         font_draw_text(text,FS_Small, gfc_color(1,1,1,1), vector2d(105, 1000) ,vector2d(1.5,1.5));
     }
@@ -788,6 +795,81 @@ void player_reset(Entity *self)
     {
         icon_set_sprite(gfc_list_get_nth(world->icons,i), Question);
     }
+
+    if(self->type == Player2)
+    {
+        player_reset(entity_get_player());
+        entity_free(self);
+    }
+}
+
+void player_multi_combat_start(Entity *player1, Entity *player2)
+{
+    int i;
+    if(!player1) return;
+
+    if(!player2) return;
+
+    if(state != Multiplayer)
+    state = Multiplayer;
+
+    List *p1deck = gfc_list_get_nth(player1->data,0);
+    List *current = gfc_list_get_nth(player1->data,1);
+
+    List *p2deck = gfc_list_get_nth(player2->data,0);
+    List *current2 = gfc_list_get_nth(player2->data,1);
+    //current deck
+    while(gfc_list_get_count(current) > 0)
+    {
+        i = gfc_list_get_count(current) - 1;
+        gfc_list_delete_last(current);
+    }
+
+    //load current deck
+    for(i = 0; i < gfc_list_get_count(p1deck); i++)
+    {
+        gfc_list_append(current,gfc_list_get_nth(p1deck,i));
+    }
+    
+    for(i = 0; i < gfc_list_get_count(p1deck); i++)
+    {
+        gfc_list_append(p2deck,gfc_list_get_nth(p1deck,i));
+        gfc_list_append(current2,gfc_list_get_nth(p1deck,i));
+    }
+    
+    player_shuffle(player1);
+    player_shuffle(player2);
+
+    player_draw(player1, 5);
+
+    turn = true;
+}
+
+void player_multi_end_turn()
+{
+    Entity *p1 = entity_get_player();
+    Entity *p2 = entity_get_player2();
+
+    if(!p1) return;
+
+    if(!p2) return;
+
+    if(turn) //player 1 turn
+    {
+        player_discard_hand(p1);
+        p2->block = 0;
+        p2->energy = p2->energyMax;
+        player_draw(p2, 5);
+    }
+    else
+    {
+        player_discard_hand(p2);
+        p1->block = 0;
+        p1->energy = p1->energyMax;
+        player_draw(p1, 5);
+    }
+
+    turn = !turn;
 }
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop

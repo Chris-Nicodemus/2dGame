@@ -49,7 +49,7 @@ int main(int argc, char * argv[])
     int done = 0;
     int i; //general use
     const Uint8 * keys;
-    Bool custom;
+    Bool custom = false;
     //Sprite *sprite;
     
     int mx,my;

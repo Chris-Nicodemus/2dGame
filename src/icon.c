@@ -25,7 +25,7 @@ typedef struct
 }IconManager;
 
 static IconManager icon_manager = {0};
-static List *tempIcons;
+List *tempIcons;
 static World *world;
 static Entity *player;
 
@@ -406,17 +406,20 @@ void icon_leftClick(Entity *self)
         case EndTurn:
         if(target) return;
         
-        if(!entity_get_player())
+        if(state == Combat)
         {
-            slog("player not found");
+            if(!entity_get_player())
+            {
+                slog("player not found");
+                return;
+            }
+            player_end_turn(entity_get_player());
             return;
         }
-        player_end_turn(entity_get_player());
-        return;
-        //turn = false;
-        //Entity *player = entity_get_player();
-        //player->energy = player->energyMax;
-
+        else
+        {
+            player_multi_end_turn();
+        }
         default:
         return;
     }

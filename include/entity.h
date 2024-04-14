@@ -12,7 +12,8 @@ typedef enum
     Event,
     Choice,
     Map,
-    MainMenu
+    MainMenu,
+    Multiplayer
 } State;
 
 typedef enum
@@ -23,7 +24,8 @@ typedef enum
     EventIcon,
     CombatButton,
     Card,
-    Enemy
+    Enemy,
+    Player2
 } EntType;
 
 typedef enum
@@ -138,4 +140,11 @@ void entity_highlight_all();
  * @return the player
 */
 Entity *entity_get_player();
+
+
+/**
+ * @brief get a reference to the second player if multiplayer
+ * @return the second player
+*/
+Entity *entity_get_player2();
 #endif

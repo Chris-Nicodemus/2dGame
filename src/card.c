@@ -169,13 +169,16 @@ void card_leftClick(Entity *self)
     //all the resons to not do anything
     if(!self->owner) return;
 
-    if(state != Combat) return;
+    if(state != Combat && state != Multiplayer) return;
 
     //slog("click");
 
-    if(!turn) return;
+    if(state == Combat)
+    {
+        if(!turn) return;
 
-    if(target) return;
+        if(target) return;
+    }
     //slog("card was left clicked");
 
     if(strcmp(self->data,"strike") == 0)
@@ -184,9 +187,26 @@ void card_leftClick(Entity *self)
         if(self->owner->energy < 1)
         return;
 
-        target = true;
-        targetsNeeded = 1;
-        usedCard = self;
+        if(state == Combat)
+        {
+            target = true;
+            targetsNeeded = 1;
+            usedCard = self;
+        }
+        else
+        {
+            if(self->owner->type == Player)
+            {
+                player_damage(entity_get_player2(),self->owner, 6, Basic);
+                player_discard(self->owner,self);
+            }
+            else
+            {
+                player_damage(entity_get_player(),self->owner, 6, Basic);
+                player_discard(self->owner,self);
+            }
+            self->owner->energy = self->owner->energy - 1;
+        }
     }
     else if(!strcmp("defend",self->data))
     {
@@ -229,9 +249,28 @@ void card_leftClick(Entity *self)
     {
         if(self->owner->energy < 1) return;
 
-        target = true;
-        targetsNeeded = 1;
-        usedCard = self;
+
+        if(state == Combat)
+        {
+            target = true;
+            targetsNeeded = 1;
+            usedCard = self;
+        }
+        else
+        {
+            if(self->owner->type == Player)
+            {
+                player_damage(entity_get_player2(),self->owner, 3, Basic);
+                player_discard(self->owner,self);
+            }
+            else
+            {
+                player_damage(entity_get_player(),self->owner, 3, Basic);
+                player_discard(self->owner,self);
+            }
+            self->owner->airborne = true;
+            self->owner->energy = self->owner->energy - 1;
+        }
     }
     else if(!strcmp("slipstream",self->data))
     {
@@ -251,17 +290,51 @@ void card_leftClick(Entity *self)
     }
     else if(!strcmp("airstrike",self->data))
     {
+        //multiplayer implementation still needed from here down
         if(self->owner->energy < 2) return;
 
-        target = true;
-        targetsNeeded = 1;
-        usedCard = self;
+        if(state == Combat)
+        {
+            target = true;
+            targetsNeeded = 1;
+            usedCard = self;
+        }
+        else
+        {
+            int damage;
+
+            if(self->owner->airborne)
+                damage = 14;
+            else
+                damage = 8;
+
+            if(self->owner->type == Player)
+            {
+                player_damage(entity_get_player2(),self->owner, damage, Basic);
+                player_discard(self->owner,self);
+            }
+            else
+            {
+                player_damage(entity_get_player(),self->owner, damage, Basic);
+                player_discard(self->owner,self);
+            }
+
+            self->owner->energy = self->owner->energy - 2;
+        }
     }
     else if(!strcmp("carpet",self->data))
     {
         if(self->owner->energy < 3) return;
 
-        enemy_damage_all(self->owner,6,0);
+        if(state == Combat)
+            enemy_damage_all(self->owner,6,0);
+        else
+        {
+            if(self->owner->type == Player)
+                player_damage(entity_get_player2(),self->owner, 6, Basic);
+            else
+                player_damage(entity_get_player(),self->owner, 6, Basic);
+        }
         self->owner->energy = self->owner->energy - 3;
         player_discard(self->owner,self);    
     }
@@ -269,7 +342,15 @@ void card_leftClick(Entity *self)
     {
         if(self->owner->energy < 1) return;
 
-        enemy_damage_all(self->owner,6,0);
+         if(state == Combat)
+            enemy_damage_all(self->owner,6,0);
+        else
+        {
+            if(self->owner->type == Player)
+                player_damage(entity_get_player2(),self->owner, 6, Basic);
+            else
+                player_damage(entity_get_player(),self->owner, 6, Basic);
+        }
         self->owner->energy = self->owner->energy - 1;
         player_discard(self->owner,self);    
     }
@@ -287,9 +368,34 @@ void card_leftClick(Entity *self)
     {
         if(self->owner->energy < 3) return;
 
-        target = true;
-        targetsNeeded = 1;
-        usedCard = self;
+        if(state == Combat)
+        {
+            target = true;
+            targetsNeeded = 1;
+            usedCard = self;
+        }
+        else
+        {
+            if(self->owner->type == Player)
+                player_damage(entity_get_player2(), self->owner, 20, Basic);
+            else
+                player_damage(entity_get_player(), self->owner, 20, Basic);
+            self->owner->energy = self->owner->energy - 3;
+
+            if(self->owner->health - 5 <= 0)
+            self->owner->health = 0;
+            else
+            self->owner->health = self->owner->health - 5;
+
+            if(self->owner->airborne)
+            {
+                self->owner->airborne = false;
+                self->owner->energy = self->owner->energy + 2;
+            }
+
+            if(self)
+                player_discard(self->owner,self);  
+        }
     }
 }
 
