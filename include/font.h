@@ -20,7 +20,9 @@ typedef enum
 {
     TT_MainMenu,
     TT_MainMenu_Button,
-    TT_Reward
+    TT_Reward,
+    TT_Event,
+    TT_EventChoice
 } TextType;
 
 typedef struct Text_S {

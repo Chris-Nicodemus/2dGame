@@ -67,11 +67,11 @@ void player_show_deck(Entity *self);
 void player_show_deck_close();
 
 /**
- * @brief do the action based on the card (only necessary when card requires a target(s))
+ * @brief do the action based on the card or consumable (only necessary when card or consumable requires a target(s))
  * @param self the player
  * @param card the card to use
 */
-void player_play_card(Entity *self, Entity *card);
+void player_do_action(Entity *self, Entity *action);
 
 /**
  * @brief start the combat. Also checks to see if currentdeck is the same as the sacred deck at the start of the combat. If not, then remake the curent deck
@@ -124,11 +124,18 @@ void player_multi_combat_start(Entity *player1, Entity *player2);
 */
 void player_multi_end_turn();
 
+/**
+ * @brief arranges the player's combat consumables in a neat row
+ * @param self the player in question
+*/
+void player_arrange_consumables(Entity *self);
+
 /*player custom data notes
 data is turned into a list
 0 - deck            sacred decklist of the player during a run
 1 - currentDeck     list of cards in-combat decklist for the player
 2 - discard         list of cards used by the player
 3 - hand            list of cards in player's current hand
+4 - consumables     list of consumables for the player to use
 */
 #endif

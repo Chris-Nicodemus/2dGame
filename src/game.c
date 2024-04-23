@@ -19,6 +19,7 @@
 #include "card.h"
 #include "icon.h"
 #include "enemy.h"
+#include "consumable.h"
 
 
 Bool leftClicked;
@@ -125,6 +126,9 @@ int main(int argc, char * argv[])
     Entity *player = player_new(vector2d(690,740));
     
     icon_get_player(player);
+
+    consumable_init();
+
     FILE *deck = fopen("config/deck.json","r");
     if(get_file_Size(deck) == 0)
     {
@@ -138,6 +142,10 @@ int main(int argc, char * argv[])
     }
     fclose(deck);
     
+    consumable_new(vector2d(0,0), "shield", true);
+    consumable_new(vector2d(0,0), "sky", true);
+    consumable_new(vector2d(0,0), "energy", true);
+    //consumable_new(vector2d(0,0), "fire", true);
 
     while(!done)
     {
@@ -176,7 +184,7 @@ int main(int argc, char * argv[])
 
             if(mButton == SDL_BUTTON_LEFT && !leftClicked)
             {
-                //slog("x: %i, y: %i",mx,my);
+                slog("x: %i, y: %i",mx,my);
                 leftClicked = true;
                 leftClickCooldown = SDL_GetTicks() + clickCooldownInterval;
                 //state = Event;
@@ -207,15 +215,6 @@ int main(int argc, char * argv[])
                 NULL,
                 &mouseColor,
                 (int)mf);
-
-            //font_draw_text("Testing!",FS_Medium,GFC_COLOR_LIGHTBLUE,vector2d(20,30),vector2d(3,3));
-            //slog("%i",state);
-            if(event != None)
-            {
-                //slog("%i",event);
-                font_draw_text(icon_get_event_text(),FS_Medium,gfc_color(1,1,1,1),vector2d(20,30),vector2d(2,2));
-                //state = Event;
-            }
 
             if(showDeck)
             {
@@ -249,7 +248,7 @@ int main(int argc, char * argv[])
 
                     if(targetsNeeded == gfc_list_get_count(targets) || gfc_list_get_count(targets) == enemy_get_count())
                     {
-                        player_play_card(player,usedCard);
+                        player_do_action(player,usedCard);
                         targetsNeeded = 0;
                         target = false;
                         while(gfc_list_get_count(targets) > 0)

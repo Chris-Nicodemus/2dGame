@@ -256,6 +256,8 @@ char *icon_get_event_text()
 void event_set()
 {
     event = Chest;
+    gfc_list_append(tempIcons,icon_new(vector2d(1220,480), EventChest));
+    text_new(icon_get_event_text(),FS_Medium, vector2d(20,30), vector2d(2,2), gfc_color(1,1,1,1), 0, TT_Event);
 }
 
 
@@ -275,7 +277,6 @@ void event_start(EventType type)
         case Explore:
         slog("Explore event");
         event_set();
-        gfc_list_append(tempIcons,icon_new(vector2d(1220,480), EventChest));
         break;
         case Shop:
         slog("Shop event");
@@ -292,8 +293,6 @@ void event_start(EventType type)
     }
 
     grace = SDL_GetTicks() + graceInterval;
-
-
 }
 
 //closes current event, updates state and map
@@ -310,9 +309,6 @@ void event_close()
 
         gfc_list_delete_last(tempIcons);
     }
-
-    
-    
 
     if(level < 5)
     {   
@@ -342,6 +338,8 @@ void event_close()
     }
     state = Choice;
     event = None;
+
+    text_clear_perms(NULL);
 }
 
 

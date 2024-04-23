@@ -25,7 +25,8 @@ typedef enum
     CombatButton,
     Card,
     Enemy,
-    Player2
+    Player2,
+    Consumable
 } EntType;
 
 typedef enum
@@ -59,6 +60,7 @@ typedef struct Entity_S
     float drawOffsetY; //how much to offset draw and bounds. Make negative to move up
     struct Entity_S *owner; //for cards to have a reference to their owner and enemies to have a reference to the player
     Bool gift;          //true if the card is supposed to be able to be claimed by the player
+    Bool shop;          //true if the item is buyable in a shop
     Bool noHighlight;   //true if you do not want entity to get highlighted on mouse
     EntType type;       //type of entity
     int iconType;       //if icon, type of icon

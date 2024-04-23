@@ -29,8 +29,13 @@ extern Bool turn;
 extern World *world;
 extern int level;
 
+int maxConsumables;
+
 Entity *player_new(Vector2D pos)
 {
+    //sets max consumables for the player to have
+    if(!maxConsumables) maxConsumables = 3;
+
     Entity *ent = entity_new();
 
     if(!ent)
@@ -74,21 +79,8 @@ Entity *player_new(Vector2D pos)
     gfc_list_append(ent->data,gfc_list_new());
     //hand
     gfc_list_append(ent->data,gfc_list_new());
-
-    //player_new_deck(ent);
-    
-
-    //copies decklist into current deck
-    //gfc_list_append(ent->data,gfc_list_copy(gfc_list_get_nth(ent->data,0)));
-
-    //discard pile
-    //gfc_list_append(ent->data,gfc_list_new());
-    //gfc_list_append(gfc_list_get_nth(ent->data,2),"test");
-
-    //hand
-    //gfc_list_append(ent->data,gfc_list_new());
-    //player_shuffle(ent);
-    //player_draw(ent,10);
+    //consumables
+    gfc_list_append(ent->data,gfc_list_new());
 
     return ent;
 }
@@ -115,16 +107,8 @@ void player_update(Entity *self)
     if(!self)
     return;
 
-    //slog("updating");
-    /*self->frame = self->frame + 0.1;
-    if(self->frame >= self->frameEnd)
-    {
-        self->frame = self->frameStart;
-    }*/
-    //slog("frame: %f", self->frame);
     self->drawOffsetX = -self->pixel.x * self->scale.y * 0.5;
     self->drawOffsetY = -self->pixel.y * self->scale.y * 0.5;
-    //slog("frame: %i",(int)self->frame);
 }
 
 void player_free(Entity *self)
@@ -150,20 +134,6 @@ void player_leftClick(Entity *self)
     if(!self) return;
 
     slog("player was left clicked");
-
-    /*int i;
-
-    slog("hand");
-    for(i = 0; i < gfc_list_get_count(gfc_list_get_nth(self->data,3)); i++)
-    {
-        slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,3),i));
-    }
-
-    slog("deck");
-    for(i = 0; i < gfc_list_get_count(gfc_list_get_nth(self->data,1)); i++)
-    {
-        slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,1),i));
-    }*/
 }
 
 void player_rightClick(Entity *self)
@@ -171,15 +141,6 @@ void player_rightClick(Entity *self)
     if(!self) return;
 
     slog("player was right clicked");
-
-    /*int i;
-
-    for(i = 0; i < gfc_list_get_count(gfc_list_get_nth(self->data,1)); i++)
-    {
-        slog("%s",gfc_list_get_nth(gfc_list_get_nth(self->data,1),i));
-    }*/
-
-    //slog("discard %s",gfc_list_get_nth(gfc_list_get_nth(self->data,2),0));
 }
 
 void player_new_deck(Entity *self)
@@ -233,7 +194,6 @@ void player_shuffle(Entity *self)
         {
             gfc_list_delete_last(discard);
         }
-        //gfc_list_insert(self->data,gfc_list_new(),2);
     }
 
     count = gfc_list_get_count(currentDeck);
@@ -260,7 +220,6 @@ void player_draw(Entity *self, Uint8 num)
 
     while((cards + 1  <= 10) && num > 0)
     {
-        //slog("drawing");
         //shuffle discard pile into deck if deck empty
         if(gfc_list_get_count(currentDeck) == 0)
         {
@@ -272,9 +231,7 @@ void player_draw(Entity *self, Uint8 num)
                 break;
             }
         }    
-        //slog("getting here");
         name = gfc_list_get_nth(currentDeck,0); //gets top card of deck
-        //slog("%s",name);
         card = card_new(name, self);
         gfc_list_append(hand,card); //add card to hand
         gfc_list_delete_nth(currentDeck,0); //removes card from top of deck
@@ -358,8 +315,6 @@ void player_load_deck(Entity *self)
 
     for(i = 0; i < sj_array_get_count(dson);i++)
     {
-        //slog("%s",sj_get_string_value(sj_array_get_nth(dson,i)));
-        
         name = sj_get_string_value(sj_array_get_nth(dson,i));
         gfc_list_append(deck,name);
     }
@@ -447,20 +402,13 @@ void player_deck_arrange(Entity *self)
     {
         card = gfc_list_get_nth(deckDisplay,i);
         card->position = vector2d(380.0 + (horiSpace + (card->pixel.x * card->scale.x)) * xOffset, (vertSpace + card->pixel.y * card->scale.y) * row);
-        //slog("x: %f, y: %f",card->position.x,card->position.y);
-        //slog("%i", (i + 1) % 5);
         if((i + 1) % 5 == 0)
         {
             row++;
             xOffset = 0;
-            //slog("i: %i, row: %i",i, row);
         }
         xOffset++;
     }
-
-    //slog("%f, %f", card->position.x,card->position.y);
-    //slog("%i", row);
-
 }
 
 void player_deck_check(Entity *self)
@@ -560,95 +508,101 @@ void player_discard_hand(Entity *self)
     {
         i = gfc_list_get_count(hand) - 1;
         card = gfc_list_get_nth(hand,i);
-        //slog("happening");
         player_discard(self,card);
     }
-
-    //slog("%i",gfc_list_get_count(hand));
 }
 
-void player_play_card(Entity *self, Entity *card)
+void player_do_action(Entity *self, Entity *action)
 {
     Entity *target;
     Bool success;
     if(!self) return;
 
-    if(!card) return;
+    if(!action) return;
 
-    if(!strcmp(card->data,"strike"))
+    if(action->type == Card)
     {
-        target = gfc_list_get_nth(targets,0);
-        if(!target)
+        if(!strcmp(action->data,"strike"))
         {
-            slog("invalid target");
-            return;
+            target = gfc_list_get_nth(targets,0);
+            if(!target)
+            {
+                slog("invalid target");
+                return;
+            }
+            success = true;
+            enemy_damage(target,self,6,0);
+            self->energy = self->energy - 1;
         }
-        success = true;
-        enemy_damage(target,self,6,0);
-        self->energy = self->energy - 1;
+        else if(!strcmp(action->data,"skies"))
+        {
+            target = gfc_list_get_nth(targets,0);
+            if(!target)
+            {
+                slog("invalid target");
+                return;
+            }
+            success = true;
+            enemy_damage(target,self,3,0);
+            self->airborne = true;
+            self->energy = self->energy - 1;
+        }
+        else if(!strcmp(action->data,"airstrike"))
+        {
+            target = gfc_list_get_nth(targets,0);
+            if(!target)
+            {
+                slog("invalid target");
+                return;
+            }
+            success = true;
+            
+            if(self->airborne)
+            {
+                enemy_damage(target,self,14,0);
+            }
+            else
+            {
+                enemy_damage(target,self,8,0);
+            }
+            self->energy = self->energy - 2;
+        }
+        else if(!strcmp(action->data,"skyfall"))
+        {
+            target = gfc_list_get_nth(targets,0);
+            if(!target)
+            {
+                slog("invalid target");
+                return;
+            }
+            success = true;
+            enemy_damage(target,self,20,0);
+            self->energy = self->energy - 3;
+
+            if(self->health - 5 <= 0)
+            self->health = 0;
+            else
+            self->health = self->health - 5;
+
+            if(self->airborne)
+            {
+                self->airborne = false;
+                self->energy = self->energy + 2;
+            }
+        }
+
+        if(success)
+            player_discard(self,action);
     }
-    else if(!strcmp(card->data,"skies"))
+    else if(action->type == Consumable)
     {
-        target = gfc_list_get_nth(targets,0);
-        if(!target)
+        slog("consumable");
+        if(!strcmp(action->data, "fire"))
         {
-            slog("invalid target");
-            return;
+            target = gfc_list_get_nth(targets,0);
+            enemy_damage(target,self,10,Basic);
+            entity_free(action);
         }
-        success = true;
-        enemy_damage(target,self,3,0);
-        self->airborne = true;
-        self->energy = self->energy - 1;
-    }
-    else if(!strcmp(card->data,"airstrike"))
-    {
-        target = gfc_list_get_nth(targets,0);
-        if(!target)
-        {
-            slog("invalid target");
-            return;
-        }
-        success = true;
-        
-        if(self->airborne)
-        {
-            enemy_damage(target,self,14,0);
-        }
-        else
-        {
-            enemy_damage(target,self,8,0);
-        }
-        self->energy = self->energy - 2;
-    }
-    else if(!strcmp(card->data,"skyfall"))
-    {
-        target = gfc_list_get_nth(targets,0);
-        if(!target)
-        {
-            slog("invalid target");
-            return;
-        }
-        success = true;
-        enemy_damage(target,self,20,0);
-        self->energy = self->energy - 3;
-
-        if(self->health - 5 <= 0)
-        self->health = 0;
-        else
-        self->health = self->health - 5;
-
-        if(self->airborne)
-        {
-            self->airborne = false;
-            self->energy = self->energy + 2;
-        }
-    }
-
-
-    if(success)
-    {
-        //add card to discard
-        player_discard(self,card);
     }
 }
 
@@ -656,7 +610,6 @@ void player_end_turn(Entity *self)
 {
     if(!self) return;
 
-    //slog("happening");
     enemy_upkeep();
     turn = false;
     player_discard_hand(self);
@@ -665,7 +618,6 @@ void player_end_turn(Entity *self)
     enemy_act();
     self->block = 0;
     enemy_intent();
-    //slog("happening 2");
     turn = true;
 }
 
@@ -684,11 +636,6 @@ void player_combat_start(Entity *self)
     while(gfc_list_get_count(current) > 0)
     {
         i = gfc_list_get_count(current) - 1;
-
-        //remove the string then delete
-        /*if(gfc_list_get_nth(current,i))
-        free(gfc_list_get_nth(current,i));*/
-
         gfc_list_delete_last(current);
     }
 
@@ -701,11 +648,6 @@ void player_combat_start(Entity *self)
     player_shuffle(self);
 
     player_draw(self, 5);
-
-    /*for(i = 0; i < gfc_list_get_count(current); i++)
-    {
-        //slog("%s",gfc_list_get_nth(current,i));
-    }*/
 
     enemy_intent();
 
@@ -720,7 +662,6 @@ void player_damage(Entity *player, Entity *dealer, int damage, DamageType damage
 
     if(player->block)
     {
-
         if(player->block < damage)
         {
             damage -= player->block;
@@ -751,7 +692,6 @@ void player_damage(Entity *player, Entity *dealer, int damage, DamageType damage
     }
 
     player->health = player->health - damage;
-    
 }
 
 void player_reset(Entity *self)
@@ -870,6 +810,25 @@ void player_multi_end_turn()
     }
 
     turn = !turn;
+}
+
+void player_arrange_consumables(Entity *self)
+{
+    List *consumables;
+    int i;
+    int spaceBetween = 50;
+    int distance = (self->scale.x * self->pixel.x) + spaceBetween; //(3 * 32) + 50
+    Entity *consumable;
+    if(!self) return;
+
+    consumables = gfc_list_get_nth(self->data, 4);
+
+    for(i = 0; i < gfc_list_get_count(consumables); i ++)
+    {
+        //x 115     y 40
+        consumable = gfc_list_get_nth(consumables,i);
+        consumable->position = vector2d(115 + (distance * i), 40);
+    }
 }
 //spritesheet goes from 0 to 147
 //96 to 111 is walking loop

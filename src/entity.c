@@ -15,6 +15,7 @@ static EntityManager entity_manager = {0}; /**<initialize a global entity manage
 extern Bool leftClicked;
 extern Bool rightClicked;
 extern State state;
+extern EventType event;
 
 void entity_system_close()
 {
@@ -132,12 +133,14 @@ Bool entity_active(Entity *self)
     switch(state)
     {
         case Combat:
-            if(type == Player || type == Enemy || type == CombatButton)
+            if(type == Player || type == Enemy || type == CombatButton || type == Consumable)
                 return true;
             else
                 return false;
         case Event:
             if(type == Player || type == EventIcon)
+                return true;
+            else if (event == Shop && type == Consumable) //show consumables when in a shop
                 return true;
             else
                 return false;
