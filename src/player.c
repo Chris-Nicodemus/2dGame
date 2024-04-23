@@ -289,17 +289,27 @@ void player_save_deck(Entity *self)
     fclose(deck);
 }
 
-void player_load_deck(Entity *self)
+void player_load_deck(Entity *self, char* file)
 {
     SJson *json,*dson;
-    List *deck = gfc_list_get_nth(self->data,0);
-    List *currentDeck = gfc_list_get_nth(self->data,1);
     int i;
     char *name;
-    if(!self)
-    return;
+    if(!self) return;
 
-    json = sj_load("config/deck.json");
+    List *deck = gfc_list_get_nth(self->data,0);
+    List *currentDeck = gfc_list_get_nth(self->data,1);
+    
+    while(gfc_list_get_count(deck) > 0)
+    {
+        gfc_list_delete_last(deck);
+    }   
+
+    while(gfc_list_get_count(currentDeck) > 0)
+    {
+        gfc_list_delete_last(currentDeck);
+    }  
+
+    json = sj_load(file);
     if(!json)
     {
         slog("failed to l0ad json");

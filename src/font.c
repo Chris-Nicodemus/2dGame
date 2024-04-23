@@ -45,6 +45,7 @@ void text_main_menu_button_update(Text *self);
 void text_main_menu_button_moused(Text *self);
 void text_play_left_click(Text *self);
 void text_pvp_left_click(Text *self);
+void text_challenge_left_click(Text *self);
 
 void font_close()
 {
@@ -391,6 +392,8 @@ Text *text_new(char *text, FontStyles style, Vector2D position, Vector2D scale, 
         newText->leftClick = text_play_left_click;
         if(!strcmp(newText->text, "PvP"))
         newText->leftClick = text_pvp_left_click;
+        if(!strcmp(newText->text, "Challenge"))
+        newText->leftClick = text_challenge_left_click;
         break;
         default:
         slog("default type");
@@ -585,4 +588,21 @@ void text_main_menu_button_update(Text *self)
 
     if(!self->mouse && !gfc_color_cmp(self->color, GFC_COLOR_WHITE))
     self->color = GFC_COLOR_WHITE;
+}
+
+void text_challenge_left_click(Text *self)
+{
+    if(!self) return;
+
+    player_load_deck(entity_get_player(), "config/blitz.json");
+
+    entity_get_player()->healthMax = 45;
+    entity_get_player()->health = entity_get_player()->healthMax;
+
+    state = Choice;
+    
+    text_clear_all(NULL);
+
+    Mix_Music *password = Mix_LoadMUS("audio/password-infinity.mp3");
+    Mix_FadeInMusic(password,-1,4000);
 }

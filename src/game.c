@@ -137,7 +137,7 @@ int main(int argc, char * argv[])
     }
     else
     {
-        player_load_deck(player);
+        player_load_deck(player, "config/deck.json");
         slog("loading deck");
     }
     fclose(deck);

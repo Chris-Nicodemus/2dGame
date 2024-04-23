@@ -53,8 +53,9 @@ void player_save_deck(Entity *self);
 /**
  * @brief load the player's deck from config
  * @param self the player in question
+ * @param file the file to load
 */
-void player_load_deck(Entity *self);
+void player_load_deck(Entity *self, char* file);
 
 /**
  * @brief draw the entire deck for the player to view what their deck is

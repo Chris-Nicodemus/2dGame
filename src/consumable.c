@@ -113,6 +113,8 @@ void consumable_free(Entity *self)
         player_arrange_consumables(self->owner);
     }
 
+    gfc_list_delete_nth(consumableList,gfc_list_get_item_index(consumableList,self));
+    
     self->data = NULL;
 }
 
@@ -153,6 +155,7 @@ Entity *consumable_new(Vector2D pos, char *name, Bool owned)
     ent->leftClick = consumable_leftClick;
     ent->rightClick = consumable_rightClick;
     ent->free = consumable_free;
+    gfc_list_append(consumableList, ent);
     return ent;
 }
 
