@@ -53,6 +53,11 @@ void icon_get_player(Entity *p);
 //data will contain the icon type from the enumeration
 
 /**
+ * @brief set the event based on the given event type
+ * @param type the type of event
+*/
+void event_set(EventType type);
+/**
  * @brief closes the current event
 */
 void event_close();

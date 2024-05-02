@@ -23,6 +23,7 @@ void player_ui(Entity *self);
 void player_reset(Entity *self);
 
 extern State state;
+extern EventType event;
 extern List *deckDisplay;
 extern List *targets;
 extern Bool turn;
@@ -377,6 +378,7 @@ void player_ui(Entity *self)
     }
 
     if(state == Combat 
+    || event == ChestFight
     || (state == Multiplayer /*Below are the conditions to determine who's energy is to show*/
     && ((self->type == Player && turn) || (self->type == Player2 && !turn))))
     {
@@ -636,7 +638,7 @@ void player_combat_start(Entity *self)
     int i;
     if(!self) return;
 
-    if(state != Combat)
+    if(event != ChestFight && state != Combat)
     state = Combat;
 
     List *deck = gfc_list_get_nth(self->data,0);

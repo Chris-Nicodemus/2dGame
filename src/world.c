@@ -174,4 +174,6 @@ void world_open_main_menu()
     text_new("PvP", FS_Large, vector2d(1875,850),vector2d(5,5), GFC_COLOR_WHITE, 0, TT_MainMenu_Button);
 
     text_new("Challenge", FS_Large, vector2d(1875,950),vector2d(3,3), GFC_COLOR_WHITE, 0, TT_MainMenu_Button);
+
+    text_new("Guard The City", FS_Large, vector2d(400,45), vector2d(7,7), GFC_COLOR_WHITE, 0, TT_MainMenu);
 }

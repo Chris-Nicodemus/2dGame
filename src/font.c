@@ -38,6 +38,7 @@ static TextManager text_manager = {0};
 extern Bool leftClicked;
 extern Bool rightClicked;
 extern State state;
+extern EventType event;
 extern List *tempIcons;
 
 //do these next
@@ -46,6 +47,7 @@ void text_main_menu_button_moused(Text *self);
 void text_play_left_click(Text *self);
 void text_pvp_left_click(Text *self);
 void text_challenge_left_click(Text *self);
+void text_decline_left_click(Text *self);
 
 void font_close()
 {
@@ -395,6 +397,12 @@ Text *text_new(char *text, FontStyles style, Vector2D position, Vector2D scale, 
         if(!strcmp(newText->text, "Challenge"))
         newText->leftClick = text_challenge_left_click;
         break;
+        case TT_EventChoice:
+        newText->moused = text_main_menu_button_moused;
+        newText->update = text_main_menu_button_update;
+        if(!strcmp(newText->text,"Decline"))
+            newText->leftClick = text_decline_left_click;
+        break;
         default:
         slog("default type");
     }
@@ -605,4 +613,11 @@ void text_challenge_left_click(Text *self)
 
     Mix_Music *password = Mix_LoadMUS("audio/password-infinity.mp3");
     Mix_FadeInMusic(password,-1,4000);
+}
+
+void text_decline_left_click(Text *self)
+{
+    if(!self) return;
+
+    event_set(ChestFight);
 }

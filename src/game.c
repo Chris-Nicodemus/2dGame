@@ -184,7 +184,7 @@ int main(int argc, char * argv[])
 
             if(mButton == SDL_BUTTON_LEFT && !leftClicked)
             {
-                slog("x: %i, y: %i",mx,my);
+                
                 leftClicked = true;
                 leftClickCooldown = SDL_GetTicks() + clickCooldownInterval;
                 //state = Event;
@@ -198,6 +198,7 @@ int main(int argc, char * argv[])
             //slog("mbutton: %i", mButton);
             if(mButton == 4 && !rightClicked)
             {
+                slog("x: %i, y: %i",mx,my);
                 rightClicked = true;
                 //slog("game happening");
             }
@@ -226,7 +227,7 @@ int main(int argc, char * argv[])
                 player_show_deck_close();
             }
 
-            if(state == Combat)
+            if(state == Combat || event == ChestFight)
             {
                 if(target)
                 {

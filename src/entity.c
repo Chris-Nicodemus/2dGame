@@ -142,6 +142,8 @@ Bool entity_active(Entity *self)
                 return true;
             else if (event == Shop && type == Consumable) //show consumables when in a shop
                 return true;
+            else if((type == Enemy || type == CombatButton || type == Consumable) && event == ChestFight)
+                return true;
             else
                 return false;
         case Choice:
@@ -318,7 +320,7 @@ Entity *entity_get_player()
 {
     int i;
 
-    for(i = 0; entity_manager.entity_max; i++)
+    for(i = 0; i < entity_manager.entity_max; i++)
     {
         if(!entity_manager.entity_list[i]._inuse)
         continue;
@@ -336,7 +338,7 @@ Entity *entity_get_player2()
 {
     int i;
 
-    for(i = 0; entity_manager.entity_max; i++)
+    for(i = 0; i < entity_manager.entity_max; i++)
     {
         if(!entity_manager.entity_list[i]._inuse)
         continue;
@@ -350,3 +352,15 @@ Entity *entity_get_player2()
     return NULL;
 }
 
+void entity_clear_gifts()
+{
+    int i;
+    for(i = entity_manager.entity_max - 1; i > -1; i--)
+    {
+        if(!entity_manager.entity_list[i]._inuse)
+        continue;
+
+        if(entity_manager.entity_list[i].gift)
+        entity_free(&entity_manager.entity_list[i]);
+    }
+}

@@ -35,7 +35,9 @@ typedef enum
     Explore,
     Shop,
     Shrine,
-    Chest
+    Chest,
+    ChestOpen,
+    ChestFight
 } EventType;
 
 typedef enum
@@ -149,4 +151,9 @@ Entity *entity_get_player();
  * @return the second player
 */
 Entity *entity_get_player2();
+
+/**
+ * @brief free all entities with the gift boolean true
+*/
+void entity_clear_gifts();
 #endif

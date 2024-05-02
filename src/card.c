@@ -14,6 +14,7 @@ void card_rightClick(Entity *self);
 void find_sprite(Entity *self);
 
 extern State state;
+extern EventType event;
 extern Bool turn;
 extern Bool target;
 extern List *targets;
@@ -169,11 +170,11 @@ void card_leftClick(Entity *self)
     //all the resons to not do anything
     if(!self->owner) return;
 
-    if(state != Combat && state != Multiplayer) return;
+    if(state != Combat && state != Multiplayer && event != ChestFight) return;
 
     //slog("click");
 
-    if(state == Combat)
+    if(state == Combat || event == ChestFight)
     {
         if(!turn) return;
 
@@ -187,7 +188,7 @@ void card_leftClick(Entity *self)
         if(self->owner->energy < 1)
         return;
 
-        if(state == Combat)
+        if(state == Combat || event == ChestFight)
         {
             target = true;
             targetsNeeded = 1;
@@ -250,7 +251,7 @@ void card_leftClick(Entity *self)
         if(self->owner->energy < 1) return;
 
 
-        if(state == Combat)
+        if(state == Combat || event == ChestFight)
         {
             target = true;
             targetsNeeded = 1;
@@ -293,7 +294,7 @@ void card_leftClick(Entity *self)
         //multiplayer implementation still needed from here down
         if(self->owner->energy < 2) return;
 
-        if(state == Combat)
+        if(state == Combat || event == ChestFight)
         {
             target = true;
             targetsNeeded = 1;
@@ -326,7 +327,7 @@ void card_leftClick(Entity *self)
     {
         if(self->owner->energy < 3) return;
 
-        if(state == Combat)
+        if(state == Combat || event == ChestFight)
             enemy_damage_all(self->owner,6,0);
         else
         {
@@ -342,7 +343,7 @@ void card_leftClick(Entity *self)
     {
         if(self->owner->energy < 1) return;
 
-         if(state == Combat)
+         if(state == Combat || event == ChestFight)
             enemy_damage_all(self->owner,6,0);
         else
         {
@@ -368,7 +369,7 @@ void card_leftClick(Entity *self)
     {
         if(self->owner->energy < 3) return;
 
-        if(state == Combat)
+        if(state == Combat || event == ChestFight)
         {
             target = true;
             targetsNeeded = 1;

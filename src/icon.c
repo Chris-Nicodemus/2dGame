@@ -246,6 +246,10 @@ char *icon_get_event_text()
         text = "A chest! What might it hold?";
         break;
 
+        case ChestOpen:
+        text = "A card! Do you accept it?";
+        break;
+
         default:
         text = "Event fail";
     }
@@ -253,11 +257,47 @@ char *icon_get_event_text()
     return text;
 }
 
-void event_set()
+void event_set(EventType type)
 {
-    event = Chest;
-    gfc_list_append(tempIcons,icon_new(vector2d(1220,480), EventChest));
-    text_new(icon_get_event_text(),FS_Medium, vector2d(20,30), vector2d(2,2), gfc_color(1,1,1,1), 0, TT_Event);
+    int i;
+    Entity *ent;
+
+    switch (type)
+    {
+    case Chest:
+        event = Chest;
+        gfc_list_append(tempIcons,icon_new(vector2d(1220,480), EventChest));
+        text_new(icon_get_event_text(),FS_Medium, vector2d(835,155), vector2d(2,2), gfc_color(1,1,1,1), 0, TT_Event);
+        break;
+    case ChestOpen:
+        event = ChestOpen;
+        text_clear_perms(NULL);
+        text_new(icon_get_event_text(),FS_Medium, vector2d(835,155), vector2d(2,2), gfc_color(1,1,1,1), 0, TT_Event);
+        text_new("Decline",FS_Medium, vector2d(1830,1125), vector2d(4,4), gfc_color(1,1,1,1), 0, TT_EventChoice);
+        break;
+    case ChestFight:
+        while(gfc_list_get_count(tempIcons) > 0)
+        {
+            i = gfc_list_get_count(tempIcons) - 1;
+            ent = gfc_list_get_nth(tempIcons,i);
+
+            if(ent) entity_free(ent);
+
+            gfc_list_delete_last(tempIcons);
+        }
+        entity_clear_gifts();
+        event = ChestFight;
+        text_clear_perms(NULL);
+        text_new("Ambush!",FS_Large,vector2d(1000,650),vector2d(3,3),GFC_COLOR_WHITE, 1500, TT_Event);
+        gfc_list_append(tempIcons,icon_new(vector2d(1950,920),EndTurn));
+        ent = enemy_new(vector2d(1600,740),Bug);
+        ent->gold = ent->gold + 50;
+        player_combat_start(entity_get_player());
+        break;
+    default:
+        break;
+    }
+    
 }
 
 
@@ -276,7 +316,7 @@ void event_start(EventType type)
         return;
         case Explore:
         slog("Explore event");
-        event_set();
+        event_set(Chest);
         break;
         case Shop:
         slog("Shop event");
@@ -394,6 +434,7 @@ void icon_leftClick(Entity *self)
         case EventChest:
         if(grace > SDL_GetTicks()) break;
         entity_free(self);
+        event_set(ChestOpen);
         ent = card_new(card_get_random(),NULL);
         ent->gift = true;
         ent->scale = vector2d(.36,.36);
@@ -404,7 +445,7 @@ void icon_leftClick(Entity *self)
         case EndTurn:
         if(target) return;
         
-        if(state == Combat)
+        if(state == Combat || event == ChestFight)
         {
             if(!entity_get_player())
             {
