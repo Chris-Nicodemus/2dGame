@@ -145,6 +145,7 @@ int main(int argc, char * argv[])
     consumable_new(vector2d(0,0), "shield", true);
     consumable_new(vector2d(0,0), "sky", true);
     consumable_new(vector2d(0,0), "energy", true);
+    //consumable_new(vector2d(0,0),"fire",false);
     //consumable_new(vector2d(0,0), "fire", true);
 
     while(!done)

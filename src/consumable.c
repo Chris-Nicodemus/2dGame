@@ -50,7 +50,7 @@ void consumable_init()
     
         gold.sprite = gf2d_sprite_load_image("images/icons/gold.png");
         gold.offset = vector2d(0,0);
-        gold.scale = vector2d(1.5,1.5);
+        gold.scale = vector2d(1,1);
 
         atexit(consumable_close);
 }
@@ -60,6 +60,7 @@ void consumable_rightClick(Entity *self);
 void consumable_think(Entity *self);
 void consumable_update(Entity *self);
 void consumable_free(Entity *self);
+void consumable_draw(Entity *self);
 
 void consumable_set(Entity *self, char *name)
 {
@@ -69,6 +70,9 @@ void consumable_set(Entity *self, char *name)
     {
         self->sprite = gf2d_sprite_load_image("images/icons/firePotion.png");
         self->data = "fire";
+
+        if(self->shop)
+        self->gold = 20;
         return;
     }
 
@@ -145,7 +149,10 @@ Entity *consumable_new(Vector2D pos, char *name, Bool owned)
         player_arrange_consumables(ent->owner);
     }
     else
+    {
         ent->shop = true;
+        ent->draw = consumable_draw;
+    }
 
     ent->bounds = gfc_rect(ent->position.x,ent->position.y, ent->pixel.x * ent->scale.x, ent->pixel.y * ent->scale.y);
     consumable_set(ent,name);
@@ -232,4 +239,39 @@ void consumable_rightClick(Entity *self)
 
     if(self->owner)
     entity_free(self);
+}
+
+void consumable_draw_gold(Entity *self)
+{
+    if(!self) return;
+
+    Vector2D pos = self->position;
+    pos.x = pos.x + 10;
+    pos.y = pos.y + (self->scale.y * self->pixel.y);
+    
+    if(gold.sprite)
+    {
+        gf2d_sprite_render(gold.sprite,pos,&gold.scale,NULL,NULL,&self->flip,NULL,NULL,0);
+    }
+}
+void consumable_draw(Entity *self)
+{
+    char *text;
+    Color color;
+    if(!self) return;
+
+    //draw gold
+    text = (char *)malloc(20);
+    sprintf(text,"%i", self->gold);
+    consumable_draw_gold(self);
+
+    Vector2D pos = self->position;
+    pos.x = pos.x + (gold.scale.x * 32) + 15;
+    pos.y = pos.y + (self->scale.y * self->pixel.y) + 10;
+
+    if(self->mouse)
+        color = GFC_COLOR_WHITE;
+    else
+        color = gfc_color8(175, 99, 188, 255); //purple
+    font_draw_text(text,FS_Medium,color, pos, vector2d(2,2));
 }
