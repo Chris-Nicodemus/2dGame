@@ -2,7 +2,13 @@
 #define __CONSUMABLE_H__
 
 #include "entity.h"
-
+//struct for drawing gold
+typedef struct
+{
+    Sprite *sprite;
+    Vector2D offset;
+    Vector2D scale;
+} Gold;
 
 /**
  * @brief Set up some stuff for consumables at start of game

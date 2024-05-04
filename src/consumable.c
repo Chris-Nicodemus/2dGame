@@ -5,14 +5,9 @@
 #include "player.h"
 
 //struct for drawing gold more efficiently
-typedef struct
-{
-    Sprite *sprite;
-    Vector2D offset;
-    Vector2D scale;
-} Gold;
 
-static Gold gold;
+
+Gold gold;
 List *consumableList;
 
 extern int maxConsumables;
@@ -246,7 +241,10 @@ void consumable_draw_gold(Entity *self)
     if(!self) return;
 
     Vector2D pos = self->position;
-    pos.x = pos.x + 10;
+    if(self->type == Consumable)
+        pos.x = pos.x + 10;
+    else if(self->type == Card)
+        pos.x = pos.x + 37.25;
     pos.y = pos.y + (self->scale.y * self->pixel.y);
     
     if(gold.sprite)

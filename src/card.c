@@ -2,14 +2,17 @@
 #include "gfc_input.h"
 #include "card.h"
 #include "icon.h"
+#include "font.h"
 #include "player.h"
 #include "enemy.h"
+#include "consumable.h"
 
 void card_think(Entity *self);
 void card_update(Entity *self);
 void card_free(Entity *self);
 void card_leftClick(Entity *self);
 void card_rightClick(Entity *self);
+void card_draw(Entity *self);
 
 void find_sprite(Entity *self);
 
@@ -20,6 +23,7 @@ extern Bool target;
 extern List *targets;
 extern int targetsNeeded;
 extern Entity *usedCard;
+extern Gold gold;
 
 Entity *card_new(char *name, Entity *player)
 {
@@ -478,6 +482,69 @@ char *card_toString(Entity *self)
     if(!strcmp(self->data, "skyfall")) return "skyfall";
 
     return "fail";
+}
+
+int get_gold_cost(Entity *self)
+{
+    if(!self) return 0;
+
+    if(!strcmp(self->data,"strike")) return 10;
+
+    if(!strcmp(self->data, "defend")) return 10;
+
+    if(!strcmp(self->data, "defensiveAction")) return 25;
+
+    if(!strcmp(self->data, "hunker")) return 30;
+
+    if(!strcmp(self->data, "skies")) return 25;
+
+    if(!strcmp(self->data, "slipstream")) return 40;
+
+    if(!strcmp(self->data, "airstrike")) return 30;
+
+    if(!strcmp(self->data, "carpet")) return 25;
+
+    if(!strcmp(self->data, "unleash")) return 60;
+
+    if(!strcmp(self->data, "skyfall")) return 50;
+
+    return 0;
+}
+
+Entity *card_shop_new()
+{
+    Entity *ent = card_new(card_get_random(),NULL);
+
+    if(!ent) return NULL;
+
+    ent->shop = true;
+    ent->draw = card_draw;
+
+    ent->gold = get_gold_cost(ent);
+
+    return ent;
+}
+
+void card_draw(Entity *self)
+{
+    char *text;
+    Color color;
+    if(!self) return;
+
+    consumable_draw_gold(self);
+
+    text = (char *)malloc(20);
+    sprintf(text,"%i", self->gold);
+
+    Vector2D pos = self->position;
+    pos.x = pos.x + (gold.scale.x * 32) + 52.25;
+    pos.y = pos.y + (self->scale.y * self->pixel.y) + 10;
+
+    if(self->mouse)
+        color = GFC_COLOR_WHITE;
+    else
+        color = gfc_color8(175, 99, 188, 255); //purple
+    font_draw_text(text,FS_Medium,color, pos, vector2d(2,2));
 }
 //51 pixel space between
 //1154 pixels down

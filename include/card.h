@@ -24,4 +24,10 @@ char *card_get_random();
  * @return the string for use
 */
 char* card_toString(Entity *self);
+
+/**
+ * @brief generate a new card for the shop
+ * @return reference to the card entity
+*/
+Entity *card_shop_new();
 #endif

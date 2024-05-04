@@ -128,7 +128,7 @@ Bool entity_active(Entity *self)
 
     type = self->type;
 
-    if(type == Card) return true;
+    if(type == Card && state != MainMenu) return true;
     
     switch(state)
     {
