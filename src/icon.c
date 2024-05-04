@@ -38,6 +38,8 @@ extern Bool target;
 extern Bool turn;
 extern Bool showShop;
 
+extern Sprite *goldIcon;
+
 Uint32 graceInterval = 100;
 Uint32 grace;
 
@@ -93,6 +95,7 @@ void icon_init()
     icon_manager.icons[2] = icon;
 
     icon.sprite = gf2d_sprite_load_image("images/icons/mapShop.png");
+    goldIcon = icon.sprite;
 
     icon_manager.icons[3] = icon;
 

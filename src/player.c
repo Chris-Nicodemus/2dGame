@@ -32,6 +32,8 @@ extern int level;
 
 int maxConsumables;
 
+Sprite *goldIcon;
+
 Entity *player_new(Vector2D pos)
 {
     //sets max consumables for the player to have
@@ -393,6 +395,18 @@ void player_ui(Entity *self)
         gf2d_draw_rect_filled(energyDisplay,pink);
 
         font_draw_text(text,FS_Small, gfc_color(1,1,1,1), vector2d(105, 1000) ,vector2d(1.5,1.5));
+    }
+
+    if(state != MainMenu && state != Choice)
+    {
+        Vector2D scale = vector2d(2,2);
+        Vector2D position = vector2d(1955,35);
+        Color color = GFC_COLOR_WHITE;
+        gf2d_sprite_draw(goldIcon,position,&scale,NULL,0,NULL,&color,0);
+        sprintf(text,"%i",self->gold);
+        position.x = position.x + 32 * scale.x + 10;
+        position.y = position.y + 24;
+        font_draw_text(text,FS_Medium, color, position, vector2d(3,3));
     }
 }
 
