@@ -115,7 +115,7 @@ void card_add_to_deck(Entity *self)
 
     entity_free(self);
 
-    if(state == Event)
+    if(state == Event && event != Shop)
     {
         event_close();
     }
@@ -172,6 +172,22 @@ void card_leftClick(Entity *self)
     }
 
     //all the resons to not do anything
+    
+    if(event == Shop)
+    {
+        slog("Shop card click");
+        if(!self->shop) return;
+
+        if(entity_get_player()->gold >= self->gold)
+        {
+            entity_get_player()->gold = entity_get_player()->gold - self->gold; 
+            card_add_to_deck(self);
+        }
+        else
+        {
+            text_new("Not Enough Gold",FS_Large,vector2d(150,325),vector2d(3,3),GFC_COLOR_WHITE, 1000, TT_Event);
+        }
+    }
     if(!self->owner) return;
 
     if(state != Combat && state != Multiplayer && event != ChestFight) return;

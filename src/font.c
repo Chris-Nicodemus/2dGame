@@ -48,6 +48,7 @@ void text_play_left_click(Text *self);
 void text_pvp_left_click(Text *self);
 void text_challenge_left_click(Text *self);
 void text_decline_left_click(Text *self);
+void text_leave_left_click(Text *self);
 
 void font_close()
 {
@@ -402,6 +403,8 @@ Text *text_new(char *text, FontStyles style, Vector2D position, Vector2D scale, 
         newText->update = text_main_menu_button_update;
         if(!strcmp(newText->text,"Decline"))
             newText->leftClick = text_decline_left_click;
+        if(!strcmp(newText->text,"Leave"))
+            newText->leftClick = text_leave_left_click;
         break;
         default:
         slog("default type");
@@ -620,4 +623,12 @@ void text_decline_left_click(Text *self)
     if(!self) return;
 
     event_set(ChestFight);
+}
+
+void text_leave_left_click(Text *self)
+{
+    if(!self)
+
+    slog("closing");
+    event_close();
 }

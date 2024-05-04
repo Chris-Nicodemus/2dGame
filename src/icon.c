@@ -5,6 +5,7 @@
 #include "card.h"
 #include "enemy.h"
 #include "player.h"
+#include "consumable.h"
 
 
 typedef struct
@@ -35,6 +36,7 @@ extern int level;
 
 extern Bool target;
 extern Bool turn;
+extern Bool showShop;
 
 Uint32 graceInterval = 100;
 Uint32 grace;
@@ -259,7 +261,7 @@ char *icon_get_event_text()
 
 void event_set(EventType type)
 {
-    int i;
+    int i, x, y, xOff, yOff;
     Entity *ent;
 
     switch (type)
@@ -294,6 +296,39 @@ void event_set(EventType type)
         ent->gold = ent->gold + 50;
         player_combat_start(entity_get_player());
         break;
+    case Shop:
+        event = Shop;
+        x = 1165;
+        y = 230;
+        xOff = 189 + 60;
+        yOff = 245.7 + 32 + 50;
+
+        text_new("Leave",FS_Medium,vector2d(300,1220),vector2d(4,4),GFC_COLOR_WHITE,0,TT_EventChoice);
+        text_new("Shop",FS_Large,vector2d(1490,60),vector2d(3,3),GFC_COLOR_WHITE, 0, TT_Event);
+
+        for(i = 0; i < 12; i++)
+        {
+            ent = card_shop_new();
+            gfc_list_append(tempIcons,ent);
+            ent->position = vector2d(x, y);
+
+            x += xOff;
+
+            if((i + 1) % 4 == 0)
+            {
+                x = 1165;
+                y += yOff;
+            }
+        }
+
+        x = 1165 + 45;
+        for(int i = 0; i < 4; i++)
+        {
+            gfc_list_append(tempIcons,consumable_new(vector2d(x,y),consumable_get_random(),false));
+
+            x += xOff;
+        }
+        break;
     default:
         break;
     }
@@ -316,7 +351,7 @@ void event_start(EventType type)
         return;
         case Explore:
         slog("Explore event");
-        event_set(Chest);
+        event_set(Shop);
         break;
         case Shop:
         slog("Shop event");

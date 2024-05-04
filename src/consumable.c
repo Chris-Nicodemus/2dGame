@@ -75,6 +75,9 @@ void consumable_set(Entity *self, char *name)
     {
         self->sprite = gf2d_sprite_load_image("images/icons/healthPotion.png");
         self->data = "health";
+
+        if(self->shop)
+        self->gold = 40;
         return;
     }
 
@@ -82,6 +85,9 @@ void consumable_set(Entity *self, char *name)
     {
         self->sprite = gf2d_sprite_load_image("images/icons/shieldPotion.png");
         self->data = "shield";
+
+        if(self->shop)
+        self->gold = 20;
         return;
     }
 
@@ -89,6 +95,9 @@ void consumable_set(Entity *self, char *name)
     {
         self->sprite = gf2d_sprite_load_image("images/icons/energyPotion.png");
         self->data = "energy";
+
+        if(self->shop)
+        self->gold = 50;
         return;
     }
 
@@ -96,6 +105,9 @@ void consumable_set(Entity *self, char *name)
     {
         self->sprite = gf2d_sprite_load_image("images/icons/skyPotion.png");
         self->data = "sky";
+
+        if(self->shop)
+        self->gold = 20;
         return;
     }
 }
@@ -220,7 +232,24 @@ void consumable_leftClick(Entity *self)
         slog("there is a non player owned consumable in the combat screen!");
         break;
     case Event:
-
+        //conditions to buy a consumable
+        if(event == Shop 
+        && self->shop 
+        && gfc_list_get_count(gfc_list_get_nth(entity_get_player()->data,4)) + 1 <= maxConsumables
+        && entity_get_player()->gold >= self->gold)
+        {
+            entity_get_player()->gold = entity_get_player()->gold - self->gold;
+            consumable_new(vector2d(0,0),self->data,true);
+            entity_free(self);
+            return; 
+        }
+        else if(event == Shop)
+        {
+            if(entity_get_player()->gold < self->gold)
+                text_new("Not Enough Gold",FS_Large,vector2d(150,325),vector2d(3,3),GFC_COLOR_WHITE, 1000, TT_Event);
+            else if(gfc_list_get_count(gfc_list_get_nth(entity_get_player()->data,4)) + 1 > maxConsumables)
+                text_new("Max Consumables",FS_Large,vector2d(150,325),vector2d(3,3),GFC_COLOR_WHITE, 1000, TT_Event);
+        }
         break;
     default:
         slog("Consumable clicked when not in combat or event");
@@ -242,7 +271,7 @@ void consumable_draw_gold(Entity *self)
 
     Vector2D pos = self->position;
     if(self->type == Consumable)
-        pos.x = pos.x + 10;
+        pos.x = pos.x;
     else if(self->type == Card)
         pos.x = pos.x + 37.25;
     pos.y = pos.y + (self->scale.y * self->pixel.y);
@@ -264,7 +293,7 @@ void consumable_draw(Entity *self)
     consumable_draw_gold(self);
 
     Vector2D pos = self->position;
-    pos.x = pos.x + (gold.scale.x * 32) + 15;
+    pos.x = pos.x + (gold.scale.x * 32) + 5;
     pos.y = pos.y + (self->scale.y * self->pixel.y) + 10;
 
     if(self->mouse)
@@ -272,4 +301,33 @@ void consumable_draw(Entity *self)
     else
         color = gfc_color8(175, 99, 188, 255); //purple
     font_draw_text(text,FS_Medium,color, pos, vector2d(2,2));
+}
+
+char *consumable_get_random()
+{
+    int i;
+    i = (int) (gfc_random() * 5);
+
+    switch(i)
+    {
+        case 0:
+        return "fire";
+
+        case 1:
+        return "health";
+
+        case 2:
+        return "shield";
+
+        case 3:
+        return "energy";
+
+        case 4:
+        return "sky";
+
+        default:
+        return "fail";
+    }
+
+    return "fail";
 }

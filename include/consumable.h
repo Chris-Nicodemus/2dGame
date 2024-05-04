@@ -36,4 +36,10 @@ void consumable_set(Entity *self, char *name);
 */
 void consumable_draw_gold(Entity *self);
 
+/**
+ * @brief get a random consumable
+ * @return the name of the consumable
+*/
+char *consumable_get_random();
+
 #endif

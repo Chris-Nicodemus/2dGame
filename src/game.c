@@ -43,6 +43,7 @@ List *deckDisplay;
 Bool showDeck = false;
 Entity *usedCard;
 World *world;
+//Bool showShop = false;
 
 int main(int argc, char * argv[])
 {
@@ -63,6 +64,8 @@ int main(int argc, char * argv[])
     deckDisplay = gfc_list_new();
     targets = gfc_list_new();
     
+    Rect shopRect = gfc_rect(1100,150,1100,1240);
+    Color shopColor = gfc_color8(55,40,52,200);//gfc_color8(245,243,220, 200);
     /*program initializtion*/
     init_logger("gf2d.log",0);
     gfc_input_init("gfc/sample_config/input.cfg");
@@ -172,6 +175,8 @@ int main(int argc, char * argv[])
 
             world_draw(world);
 
+            if(event == Shop)
+            gf2d_draw_rect_filled(shopRect,shopColor);
             //entities middle
             entity_system_draw();
 

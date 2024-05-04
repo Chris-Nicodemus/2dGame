@@ -68,6 +68,7 @@ Entity *player_new(Vector2D pos)
     ent->energyMax = 3;
     ent->energy = ent->energyMax;
     ent->type = Player;
+    ent->gold = 200;
     
 
     ent->data = gfc_list_new();
@@ -828,8 +829,8 @@ void player_arrange_consumables(Entity *self)
 {
     List *consumables;
     int i;
-    int spaceBetween = 50;
-    int distance = (self->scale.x * self->pixel.x) + spaceBetween; //(3 * 32) + 50
+    int spaceBetween = 5;
+    float distance = (self->scale.x * self->pixel.x) + spaceBetween; //(3 * 32) + 50
     Entity *consumable;
     if(!self) return;
 
