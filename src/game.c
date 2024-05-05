@@ -21,6 +21,8 @@
 #include "enemy.h"
 #include "consumable.h"
 
+#include "particles.h"
+
 
 Bool leftClicked;
 Uint32 leftClickCooldown;
@@ -100,6 +102,7 @@ int main(int argc, char * argv[])
     enemy_system_init(24);
 
     gfc_audio_init(100,64,4,10,1,0);
+    particle_init(50000);
     
     //slog("x: %f, y: %f", play->textSize.x, play->textSize.y);
     
@@ -183,7 +186,8 @@ int main(int argc, char * argv[])
             entity_highlight_all();
 
             //gf2d_draw_rect_filled(gfc_rect(player->position.x,player->position.y,5,5),gfc_color(1,0,0,1));
-            
+            particle_system_draw();
+
             text_update_all();
 
             text_draw_all();
@@ -193,6 +197,7 @@ int main(int argc, char * argv[])
                 
                 leftClicked = true;
                 leftClickCooldown = SDL_GetTicks() + clickCooldownInterval;
+                particle_spray(300,1000,GFC_COLOR_WHITE,GFC_COLOR_BLACK,vector2d(1,1),5,GFC_2PI,vector2d(mx,my));
                 //state = Event;
                 //player_draw(player,1);
             }
