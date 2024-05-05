@@ -34,8 +34,8 @@ typedef enum
     None,
     Explore,
     Shop,
-    Shrine,
     Chest,
+    Shrine,
     ChestOpen,
     ChestFight
 } EventType;

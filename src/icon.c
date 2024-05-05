@@ -343,7 +343,7 @@ void event_set(EventType type)
 void event_start(EventType type)
 {
     state = Event;
-    
+    int i;
 
     //slog("%i", state);
 
@@ -354,7 +354,9 @@ void event_start(EventType type)
         return;
         case Explore:
         slog("Explore event");
-        event_set(Shop);
+        i = (int)(gfc_random() * 2) + 2;
+        //slog("%i",i);
+        event_set(i);
         break;
         case Shop:
         slog("Shop event");
