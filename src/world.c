@@ -162,7 +162,7 @@ void world_open_main_menu()
     if(opening)
     {
         Mix_PlayMusic(opening, -1);
-        Mix_VolumeMusic(32);
+        Mix_VolumeMusic(24);
         //slog("music volume: %i",Mix_VolumeMusic(-1));
     }
     else

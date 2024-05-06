@@ -210,6 +210,8 @@ void entity_think(Entity *self)
 
     if(self->think)
     self->think(self);
+
+    self->oldMouse = self->mouse;
 }
 
 

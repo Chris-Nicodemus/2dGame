@@ -1,4 +1,5 @@
 #include "simple_logger.h"
+#include "gfc_audio.h"
 #include "gfc_list.h"
 #include "font.h"
 #include "icon.h"
@@ -50,6 +51,8 @@ void icon_leftClick(Entity *self);
 void end_turn_draw(Entity *self);
 //void icon_rightClick(Entity *self);
 
+Sound *button;
+
 void icon_quit()
 {
     if(icon_manager.icons)
@@ -70,6 +73,8 @@ void icon_init()
     tempIcons = gfc_list_new();
 
     IconInfo icon;
+
+    button = gfc_sound_load("audio/system-notification.mp3",1,0);
 
     icon.sprite = gf2d_sprite_load_image("images/icons/questionMark.png");
     icon.x = 634;
@@ -490,6 +495,7 @@ void icon_leftClick(Entity *self)
         case EndTurn:
         if(target) return;
         
+        gfc_sound_play(button,0,1,0,0);
         if(state == Combat || event == ChestFight)
         {
             if(!entity_get_player())

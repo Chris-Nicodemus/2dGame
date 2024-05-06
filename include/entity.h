@@ -93,6 +93,7 @@ typedef struct Entity_S
 
     Rect bounds; //size of sprite
     Bool mouse; //true if mouse is held over bounds
+    Bool oldMouse; //holds the state of the mouse variable from the last frame
 }Entity;
 
 /**

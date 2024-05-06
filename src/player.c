@@ -12,6 +12,7 @@
 #include "card.h"
 #include "enemy.h"
 #include "particles.h"
+#include "gfc_audio.h"
 
 void player_think(Entity *self);
 void player_update(Entity *self);
@@ -35,10 +36,20 @@ int maxConsumables;
 
 Sprite *goldIcon;
 
+Sound *gunshot;
+
 Entity *player_new(Vector2D pos)
 {
     //sets max consumables for the player to have
     if(!maxConsumables) maxConsumables = 3;
+
+    if(!gunshot)
+    {
+        gunshot = gfc_sound_load("audio/sci-fi-gun(1).mp3",0.5,10);
+        //gunshot = gfc_sound_load("audio/flipcard.mp3",0.5,0);
+        //if(gunshot) slog("Did it");
+    }
+    
 
     Entity *ent = entity_new();
 
@@ -139,6 +150,7 @@ void player_leftClick(Entity *self)
     if(!self) return;
 
     slog("player was left clicked");
+    //gfc_sound_play(gunshot,0,1,0,1);
 }
 
 void player_rightClick(Entity *self)
@@ -620,7 +632,10 @@ void player_do_action(Entity *self, Entity *action)
         }
 
         if(success)
+        {
             player_discard(self,action);
+            gfc_sound_play(gunshot,0,1,0,1);
+        }
     }
     else if(action->type == Consumable)
     {

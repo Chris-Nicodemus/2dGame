@@ -40,6 +40,7 @@ extern Bool rightClicked;
 extern State state;
 extern EventType event;
 extern List *tempIcons;
+extern Sound *button;
 
 //do these next
 void text_main_menu_button_update(Text *self);
@@ -554,6 +555,7 @@ void text_play_left_click(Text *self)
 
     text_clear_all(NULL);
 
+    gfc_sound_play(button,0,1,0,0);
     Mix_Music *password = Mix_LoadMUS("audio/password-infinity.mp3");
     Mix_FadeInMusic(password,-1,4000);
     return;
@@ -575,6 +577,7 @@ void text_pvp_left_click(Text *self)
     Mix_Music *password = Mix_LoadMUS("audio/password-infinity.mp3");
     Mix_FadeInMusic(password,-1,4000);
 
+    gfc_sound_play(button,0,1,0,0);
     player_multi_combat_start(entity_get_player(),player2);
     gfc_list_append(tempIcons,icon_new(vector2d(1950,920),EndTurn));
     
@@ -614,6 +617,7 @@ void text_challenge_left_click(Text *self)
     
     text_clear_all(NULL);
 
+    gfc_sound_play(button,0,1,0,0);
     Mix_Music *password = Mix_LoadMUS("audio/password-infinity.mp3");
     Mix_FadeInMusic(password,-1,4000);
 }
@@ -622,6 +626,7 @@ void text_decline_left_click(Text *self)
 {
     if(!self) return;
 
+    gfc_sound_play(button,0,1,0,0);
     event_set(ChestFight);
 }
 
@@ -629,6 +634,7 @@ void text_leave_left_click(Text *self)
 {
     if(!self)
 
+    gfc_sound_play(button,0,1,0,0);
     slog("closing");
     event_close();
 }

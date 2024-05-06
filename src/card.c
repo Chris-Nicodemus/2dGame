@@ -1,5 +1,6 @@
 #include "simple_logger.h"
 #include "gfc_input.h"
+#include "gfc_audio.h"
 #include "card.h"
 #include "icon.h"
 #include "font.h"
@@ -25,8 +26,22 @@ extern int targetsNeeded;
 extern Entity *usedCard;
 extern Gold gold;
 
+Sound *flip;
+Sound *charge;
+extern Sound *gunshot;
+Sound *fly;
+
 Entity *card_new(char *name, Entity *player)
 {
+    if(!flip)
+    flip = gfc_sound_load("audio/flipcard.mp3",0.5,0);
+
+    if(!charge)
+    charge = gfc_sound_load("audio/charge-up.wav",0.5,1);
+
+    if(!fly)
+    fly = gfc_sound_load("audio/fly.mp3",1,0);
+
     Entity *ent = entity_new();
 
     if(!ent)
@@ -128,6 +143,12 @@ void card_think(Entity *self)
 
     if(self->owner)
     {
+        if(self->mouse && !self->oldMouse)
+        {
+            gfc_sound_play(flip,0,0.5,gfc_list_get_item_index(gfc_list_get_nth(self->owner->data,3),self) % 8, 0);  
+            //slog("playing sound"); 
+        }
+
         if(!strcmp(self->data,"carpet") && self->owner->airborne)
         {
             self->sprite = gf2d_sprite_load_image("images/cards/carpetUp.png");
@@ -216,6 +237,7 @@ void card_leftClick(Entity *self)
         }
         else
         {
+            gfc_sound_play(gunshot,0,1,(gfc_list_get_item_index(gfc_list_get_nth(self->owner->data,3),self) + 1) % 8, 0);
             if(self->owner->type == Player)
             {
                 player_damage(entity_get_player2(),self->owner, 6, Basic);
@@ -227,6 +249,7 @@ void card_leftClick(Entity *self)
                 player_discard(self->owner,self);
             }
             self->owner->energy = self->owner->energy - 1;
+              
         }
     }
     else if(!strcmp("defend",self->data))
@@ -235,6 +258,7 @@ void card_leftClick(Entity *self)
 
         self->owner->energy = self->owner->energy - 1;
         self->owner->block = self->owner->block + 5;
+        gfc_sound_play(charge,0,1,(gfc_list_get_item_index(gfc_list_get_nth(self->owner->data,3),self) + 1) % 8, 0);  
 
         player_discard(self->owner,self);
     }
@@ -245,6 +269,7 @@ void card_leftClick(Entity *self)
         self->owner->energy = self->owner->energy - 1;
         self->owner->block = self->owner->block + 5;
         self->owner->airborne = true;
+        gfc_sound_play(charge,0,1,(gfc_list_get_item_index(gfc_list_get_nth(self->owner->data,3),self) + 1) % 8, 0);  
 
         player_discard(self->owner,self);
     }
@@ -253,6 +278,7 @@ void card_leftClick(Entity *self)
         if(self->owner->energy < 2) return;
 
         self->owner->energy = self->owner->energy - 2;
+        gfc_sound_play(charge,0,1,(gfc_list_get_item_index(gfc_list_get_nth(self->owner->data,3),self) + 1) % 8, 0);  
 
         if(self->owner->airborne)
         {
@@ -279,6 +305,7 @@ void card_leftClick(Entity *self)
         }
         else
         {
+            gfc_sound_play(gunshot,0,1,(gfc_list_get_item_index(gfc_list_get_nth(self->owner->data,3),self) + 1) % 8, 0);  
             if(self->owner->type == Player)
             {
                 player_damage(entity_get_player2(),self->owner, 3, Basic);
@@ -306,6 +333,7 @@ void card_leftClick(Entity *self)
             player_draw(self->owner,1);
         }
 
+        gfc_sound_play(fly,0,1,(gfc_list_get_item_index(gfc_list_get_nth(self->owner->data,3),self) + 1) % 8, 0);  
         self->owner->energy = self->owner->energy - 1;
         player_discard(self->owner,self);        
     }
@@ -328,6 +356,8 @@ void card_leftClick(Entity *self)
                 damage = 14;
             else
                 damage = 8;
+
+            gfc_sound_play(gunshot,0,1,(gfc_list_get_item_index(gfc_list_get_nth(self->owner->data,3),self) + 1) % 8, 0);  
 
             if(self->owner->type == Player)
             {
@@ -373,7 +403,10 @@ void card_leftClick(Entity *self)
                 player_damage(entity_get_player(),self->owner, 6, Basic);
         }
         self->owner->energy = self->owner->energy - 1;
-        player_discard(self->owner,self);    
+        gfc_sound_play(gunshot,0,1,(gfc_list_get_item_index(gfc_list_get_nth(self->owner->data,3),self) + 1) % 8, 0);   
+
+        player_discard(self->owner,self);  
+         
     }
     else if(!strcmp("unleash",self->data))
     {
@@ -381,6 +414,8 @@ void card_leftClick(Entity *self)
         //remove card from list
         List *hand = gfc_list_get_nth(self->owner->data, 3);
         gfc_list_delete_nth(hand, gfc_list_get_item_index(hand,self));
+
+        gfc_sound_play(charge,0,1,(gfc_list_get_item_index(gfc_list_get_nth(self->owner->data,3),self) + 1) % 8, 0);  
     
         player_arrange_hand(self->owner);
         entity_free(self);
@@ -414,8 +449,12 @@ void card_leftClick(Entity *self)
                 self->owner->energy = self->owner->energy + 2;
             }
 
+            gfc_sound_play(gunshot,0,1,(gfc_list_get_item_index(gfc_list_get_nth(self->owner->data,3),self) + 1) % 8, 0);  
+
             if(self)
                 player_discard(self->owner,self);  
+
+            
         }
     }
 }
