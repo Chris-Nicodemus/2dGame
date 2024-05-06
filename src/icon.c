@@ -6,6 +6,7 @@
 #include "enemy.h"
 #include "player.h"
 #include "consumable.h"
+#include "particles.h"
 
 
 typedef struct
@@ -420,6 +421,7 @@ void event_close()
     event = None;
 
     text_clear_perms(NULL);
+    particle_clear();
 }
 
 
@@ -443,16 +445,19 @@ void icon_leftClick(Entity *self)
         gfc_list_append(tempIcons,icon_new(vector2d(1950,920),EndTurn));
         ent = enemy_new(vector2d(1600,740),Bug);
         player_combat_start(entity_get_player());
+        particle_clear();
         return;
 
         case ChoiceExplore:
         //slog("Explore Click");
         event_start(Explore);
+        particle_clear();
         return;
 
         case ChoiceShrine:
         state = Event;
         event_start(Shrine);
+        particle_clear();
         return;
 
         case EventShrine:

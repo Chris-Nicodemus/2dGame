@@ -2,6 +2,7 @@
 
 #include "gf2d_draw.h"
 #include "entity.h"
+#include "particles.h"
 
 
 typedef struct 
@@ -194,6 +195,7 @@ void entity_think(Entity *self)
     if(self->mouse && mButton == SDL_BUTTON_LEFT && !leftClicked)
     {
         leftClicked = true;
+        //particle_spray(3000,50,gfc_color8(175, 99, 188, 255),GFC_COLOR_BLACK,vector2d(1,1),5,GFC_2PI,vector2d(mx,my));
         if(self->leftClick)
         self->leftClick(self);
     }

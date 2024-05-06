@@ -11,6 +11,7 @@
 #include "player.h"
 #include "card.h"
 #include "enemy.h"
+#include "particles.h"
 
 void player_think(Entity *self);
 void player_update(Entity *self);
@@ -656,6 +657,8 @@ void player_combat_start(Entity *self)
     if(event != ChestFight && state != Combat)
     state = Combat;
 
+    self->energy = self->energyMax;
+
     List *deck = gfc_list_get_nth(self->data,0);
     List *current = gfc_list_get_nth(self->data,1);
 
@@ -698,6 +701,7 @@ void player_damage(Entity *player, Entity *dealer, int damage, DamageType damage
         if(player->block > damage)
         {
             player->block = player->block - damage;
+            particle_spray(2000,60,gfc_color_hsl(205,1,0.58,1),gfc_color_hsl(25,0,0.12,0),vector2d(1,1),5,GFC_2PI,player->position);
             return;
         }
     }
@@ -718,7 +722,11 @@ void player_damage(Entity *player, Entity *dealer, int damage, DamageType damage
         damage -= 3;
     }
 
-    player->health = player->health - damage;
+    if(damage)
+    {
+        player->health = player->health - damage;
+        particle_spray(2000,60,gfc_color_hsl(11,1,0.45,1),gfc_color_hsl(10,0,0.05,0),vector2d(1,1),5,GFC_2PI,player->position);
+    }
 }
 
 void player_reset(Entity *self)

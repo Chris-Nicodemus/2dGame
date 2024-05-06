@@ -5,6 +5,7 @@
 #include "icon.h"
 #include "enemy.h"
 #include "player.h"
+#include "particles.h"
 
 
 extern State state;
@@ -260,6 +261,7 @@ void enemy_damage(Entity *victim, Entity *self, int damage, DamageType dammageTy
         {
             victim->block = victim->block - damage;
             damage = 0;
+            particle_spray(2000,60,gfc_color_hsl(205,1,0.58,1),gfc_color_hsl(25,0,0.12,0),vector2d(1,1),5,GFC_2PI,victim->position);
         }
     }
 
@@ -280,7 +282,13 @@ void enemy_damage(Entity *victim, Entity *self, int damage, DamageType dammageTy
         return;
     }
 
-    victim->health = victim->health - damage;
+    if(damage)
+    {
+        victim->health = victim->health - damage;
+        particle_spray(2000,60,gfc_color_hsl(11,1,0.45,1),gfc_color_hsl(10,0,0.05,0),vector2d(1,1),5,GFC_2PI,victim->position);
+    }
+
+
 }
 
 void enemy_damage_all(Entity *dealer, int damage, DamageType damageType)

@@ -197,7 +197,7 @@ int main(int argc, char * argv[])
                 
                 leftClicked = true;
                 leftClickCooldown = SDL_GetTicks() + clickCooldownInterval;
-                particle_spray(300,1000,GFC_COLOR_WHITE,GFC_COLOR_BLACK,vector2d(1,1),5,GFC_2PI,vector2d(mx,my));
+                //particle_spray(3000,50,gfc_color8(175, 99, 188, 255),GFC_COLOR_BLACK,vector2d(1,1),5,GFC_2PI,vector2d(mx,my));
                 //state = Event;
                 //player_draw(player,1);
             }
