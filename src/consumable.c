@@ -250,6 +250,15 @@ void consumable_leftClick(Entity *self)
             else if(gfc_list_get_count(gfc_list_get_nth(entity_get_player()->data,4)) + 1 > maxConsumables)
                 text_new("Max Consumables",FS_Large,vector2d(150,325),vector2d(3,3),GFC_COLOR_WHITE, 1000, TT_Event);
         }
+        else if(event == ChestFight)
+        {
+            if(target) return;
+        
+            if(self->owner)
+            consumable_use(self);
+            else
+            slog("there is a non player owned consumable in the combat screen!");
+        }
         break;
     default:
         slog("Consumable clicked when not in combat or event");
